@@ -2184,10 +2184,10 @@ async function doLogin() {
 
     // Show admin tab only for designated admin email
     const adminBtn = document.getElementById("admin-nav-btn");
-    if (adminBtn) adminBtn.style.display = email.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? "flex" : "none";
-    if (adminBtn && email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      adminBtn.style.display = "flex";
-    }
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanAdmin = (ADMIN_EMAIL || "").trim().toLowerCase();
+    console.log("Login email:", cleanEmail, "| Admin email:", cleanAdmin, "| Match:", cleanEmail === cleanAdmin);
+    if (adminBtn) adminBtn.style.display = cleanEmail === cleanAdmin ? "flex" : "none";
 
     resetSessionTimer();
     await syncAllDataFromSupabase();
@@ -2286,10 +2286,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (el) { el.textContent = displayName; el.style.color = "var(--green)"; el.style.fontWeight = "700"; }
     document.getElementById("lockScreen").style.display = "none";
     const adminBtn = document.getElementById("admin-nav-btn");
-    if (adminBtn) adminBtn.style.display = session.user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? "flex" : "none";
-    if (adminBtn && session.user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      adminBtn.style.display = "flex";
-    }
+    const sessionEmail = (session.user.email || "").trim().toLowerCase();
+    const adminEmail   = (ADMIN_EMAIL || "").trim().toLowerCase();
+    console.log("Session email:", sessionEmail, "| Admin email:", adminEmail, "| Match:", sessionEmail === adminEmail);
+    if (adminBtn) adminBtn.style.display = sessionEmail === adminEmail ? "flex" : "none";
     await syncAllDataFromSupabase();
   }
 });
