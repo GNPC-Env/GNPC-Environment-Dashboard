@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- GNPC-ENV-BUILD-v20260706-FIXED -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -875,11 +876,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-  const SUPABASE_URL = "https://ukjfqfcddvmbgmxitgsv.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVramZxZmNkZHZtYmdteGl0Z3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTQyNTAsImV4cCI6MjA5NzM3MDI1MH0.kucXa5gUTT-MBUYyh0TXMPhAFcS7tBBpPDljEJxEr8k";
-  window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
 
 <style>
   :root{--green:#1A6B3E;--dgreen:#124D2C;--lgreen:#E8F5ED;--gold:#C59332;--lgold:#FDF6E3;--blue:#2B7CB5;--lblue:#EBF4FB;--red:#C53030;--lred:#FEF2F2;--orange:#D97706;--lorange:#FFFBEB;--teal:#0D9488;--lteal:#F0FDFA;--slate:#1E293B;--mid:#475569;--light:#F1F5F2;--border:#D4E6DA;--white:#FFFFFF;--grey:#64748B;}
@@ -5600,8 +5596,20 @@ function buildWaste() {
   const currentYr   = window._wasteYear || 2026;
   const currentTab  = window._wasteTab  || "wa-general-tab";
   const currentSite = window._waSite    || "summary";
-  // Restore site tab
-  switchWasteSite(document.querySelector('.wa-site-btn[data-site="'+currentSite+'"]'), currentSite);
+  // Show correct panel without calling switchWasteSite (avoids infinite loop)
+  var panels = { summary:"wa-summary-panel", ph:"wa-ph-panel", ratc:"wa-ratc-panel", gtc:"wa-gtc-panel", eh:"wa-eh-panel" };
+  Object.keys(panels).forEach(function(k) {
+    var el = document.getElementById(panels[k]);
+    if (el) el.style.display = k === currentSite ? "" : "none";
+  });
+  // Update tab styles
+  document.querySelectorAll(".wa-site-btn").forEach(function(b) {
+    var active = b.dataset.site === currentSite;
+    b.style.borderBottomColor = active ? "var(--green)" : "transparent";
+    b.style.color             = active ? "var(--green)" : "var(--mid)";
+    b.style.fontWeight        = active ? "700"          : "600";
+  });
+  if (currentSite === "summary") renderWasteSummary();
   renderWasteForYear(currentYr);
   // Restore year buttons
   document.querySelectorAll(".waste-yr-btn").forEach(b => {
@@ -6082,7 +6090,8 @@ function exportSearchAsPDF() {
     document.getElementById("srch-keyword").value ? `"${document.getElementById("srch-keyword").value}"` : ""
   ].filter(Boolean).join(" · ");
 
-  const printDoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>GNPC Search Results</title>
+  const printDoc = `<!DOCTYPE html>
+<!-- GNPC-ENV-BUILD-v20260706-FIXED --><html><head><meta charset="UTF-8"><title>GNPC Search Results</title>
   <style>
     body{font-family:"Segoe UI",sans-serif;padding:1.5cm;color:#1E293B;}
     h1{font-size:16px;color:#1A6B3E;margin-bottom:4px;}
