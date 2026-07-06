@@ -426,13 +426,27 @@
 <!-- ENERGY -->
 <div class="page" id="page-energy">
   <!-- Location sub-tabs -->
-  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;">
-    <button class="en-loc-btn active" data-loc="ph" onclick="switchEnergyLocation(this,'ph')" style="padding:.45rem 1.1rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.78rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
-    <button class="en-loc-btn" data-loc="eh" onclick="switchEnergyLocation(this,'eh')" style="padding:.45rem 1.1rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.78rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House, Takoradi</button>
+  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
+    <button class="en-loc-btn active" data-loc="all"  onclick="switchEnergyLocation(this,'all')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 All Sites</button>
+    <button class="en-loc-btn"        data-loc="ph"   onclick="switchEnergyLocation(this,'ph')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
+    <button class="en-loc-btn"        data-loc="ratc" onclick="switchEnergyLocation(this,'ratc')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
+    <button class="en-loc-btn"        data-loc="gtc"  onclick="switchEnergyLocation(this,'gtc')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
+    <button class="en-loc-btn"        data-loc="eh"   onclick="switchEnergyLocation(this,'eh')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
+  </div>
+
+  <!-- ALL SITES panel -->
+  <div id="en-all-panel">
+    <div class="info"><span>📊</span><div><strong>All Corporate Sites — Electricity Comparison.</strong> Overview across all four GNPC facilities. Select a site tab above for detailed monthly data and charts.</div></div>
+    <div id="en-all-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="card" style="margin-bottom:1rem;"><div class="ct">Monthly Consumption by Site — kWh</div><canvas id="en-all-chart"></canvas></div>
+    <div class="card"><div class="ct">Site Summary</div>
+      <div class="tw"><table><thead><tr><th>Site</th><th>Period</th><th>Consumption (kWh)</th><th>Cost (GH¢)</th><th>Scope 2 (tCO₂e)</th><th>Data Status</th></tr></thead>
+      <tbody id="en-all-tbody"></tbody></table></div>
+    </div>
   </div>
 
   <!-- PH panel -->
-  <div id="en-ph-panel">
+  <div id="en-ph-panel" style="display:none;">
 
   <!-- Year selector -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-bottom:.9rem;">
@@ -531,6 +545,45 @@
     </div>
 
   </div><!-- /en-eh-panel -->
+
+  <!-- RATC panel -->
+  <div id="en-ratc-panel" style="display:none;">
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;">
+      <span style="font-size:.65rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;">Year:</span>
+      <button class="ratc-yr-btn" data-yr="2026" onclick="setSiteEnergyYear('ratc',2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:.73rem;font-weight:700;cursor:pointer;">2026</button>
+      <button class="ratc-yr-btn" data-yr="2025" onclick="setSiteEnergyYear('ratc',2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2025</button>
+    </div>
+    <div id="ratc-en-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="info"><span>🔬</span><div><strong>Research &amp; Technology Centre — Electricity.</strong> Framework ready — use + Add Data to log ECG bills when available.</div></div>
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="card"><div class="ct" id="ratc-en-ct">Monthly Consumption (kWh) — 2026</div><canvas id="ratc-en-chart"></canvas></div>
+      <div class="card"><div class="ct" id="ratc-cost-ct">Monthly Bill (GH¢) — 2026</div><canvas id="ratc-cost-chart"></canvas></div>
+    </div>
+    <div class="card"><div class="ct" id="ratc-en-table-ct">RATC — Electricity 2026</div>
+      <div class="tw"><table><thead><tr><th>Month</th><th>Consumption (kWh)</th><th>Bill (GH¢)</th><th>Scope 2 (tCO₂e)</th><th>Status</th></tr></thead>
+      <tbody id="ratc-en-tbody"></tbody></table></div>
+    </div>
+  </div><!-- /en-ratc-panel -->
+
+  <!-- GTC panel -->
+  <div id="en-gtc-panel" style="display:none;">
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;">
+      <span style="font-size:.65rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;">Year:</span>
+      <button class="gtc-yr-btn" data-yr="2026" onclick="setSiteEnergyYear('gtc',2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:.73rem;font-weight:700;cursor:pointer;">2026</button>
+      <button class="gtc-yr-btn" data-yr="2025" onclick="setSiteEnergyYear('gtc',2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2025</button>
+    </div>
+    <div id="gtc-en-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="info"><span>🎓</span><div><strong>GNPC Training Centre — Electricity.</strong> Framework ready — use + Add Data to log ECG bills when available.</div></div>
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="card"><div class="ct" id="gtc-en-ct">Monthly Consumption (kWh) — 2026</div><canvas id="gtc-en-chart"></canvas></div>
+      <div class="card"><div class="ct" id="gtc-cost-ct">Monthly Bill (GH¢) — 2026</div><canvas id="gtc-cost-chart"></canvas></div>
+    </div>
+    <div class="card"><div class="ct" id="gtc-en-table-ct">GTC — Electricity 2026</div>
+      <div class="tw"><table><thead><tr><th>Month</th><th>Consumption (kWh)</th><th>Bill (GH¢)</th><th>Scope 2 (tCO₂e)</th><th>Status</th></tr></thead>
+      <tbody id="gtc-en-tbody"></tbody></table></div>
+    </div>
+  </div><!-- /en-gtc-panel -->
+
 </div>
 
 <!-- WASTE -->
@@ -664,6 +717,17 @@
 <!-- WATER -->
 <div class="page" id="page-water">
 
+  <!-- Site tabs -->
+  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
+    <button class="wt-loc-btn active" data-loc="ph"   onclick="switchWaterSite(this,'ph')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
+    <button class="wt-loc-btn"        data-loc="ratc" onclick="switchWaterSite(this,'ratc')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
+    <button class="wt-loc-btn"        data-loc="gtc"  onclick="switchWaterSite(this,'gtc')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
+    <button class="wt-loc-btn"        data-loc="eh"   onclick="switchWaterSite(this,'eh')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
+  </div>
+
+  <!-- PH panel (existing content) -->
+  <div id="wt-ph-panel">
+
   <!-- Header -->
   <div style="background:linear-gradient(135deg,#0a4a6e 0%,var(--blue) 100%);border-radius:12px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
     <div>
@@ -723,6 +787,26 @@
   </div>
 
 </div>
+  </div><!-- /wt-ph-panel -->
+
+  <!-- RATC Water -->
+  <div id="wt-ratc-panel" style="display:none;">
+    <div class="info"><span>🔬</span><div><strong>Research &amp; Technology Centre — Water Consumption.</strong> Framework ready — awaiting data collection.</div></div>
+    <div class="pending"><span>💧</span><div><h4>RATC Water Data — Pending Collection</h4><p>No water data recorded for RATC yet. Use + Add Water Data to begin logging when bills are available.</p></div></div>
+  </div>
+
+  <!-- GTC Water -->
+  <div id="wt-gtc-panel" style="display:none;">
+    <div class="info"><span>🎓</span><div><strong>GNPC Training Centre — Water Consumption.</strong> Framework ready — awaiting data collection.</div></div>
+    <div class="pending"><span>💧</span><div><h4>GTC Water Data — Pending Collection</h4><p>No water data recorded for GTC yet. Use + Add Water Data to begin logging when bills are available.</p></div></div>
+  </div>
+
+  <!-- Energy House Water -->
+  <div id="wt-eh-panel" style="display:none;">
+    <div class="info"><span>🏭</span><div><strong>Energy House, Takoradi — Water Consumption.</strong> Framework ready — awaiting data collection.</div></div>
+    <div class="pending"><span>💧</span><div><h4>Energy House Water Data — Pending Collection</h4><p>No water data recorded for Energy House yet. Use + Add Water Data to begin logging when bills are available.</p></div></div>
+  </div>
+
 
 <!-- TRAVEL -->
 <div class="page" id="page-travel">
@@ -1207,7 +1291,16 @@
         </select>
       </div>
       <div style="display:flex;flex-direction:column;gap:.25rem;">
-        <label style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em;">② Scope</label>
+        <label style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em;">② Site</label>
+        <select id="rpt-site" style="padding:.35rem .55rem;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:white;font-size:.76rem;cursor:pointer;">
+          <option value="all_corporate">All Corporate Sites</option>
+          <option value="ph">Petroleum House</option>
+          <option value="ratc">RATC</option>
+          <option value="gtc">GTC</option>
+          <option value="eh">Energy House, Takoradi</option>
+          <option value="total_gnpc">🌍 Total GNPC (Corporate + Upstream)</option>
+        </select>
+        <label style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em;">③ Scope</label>
         <select id="rpt-scope" style="padding:.38rem .65rem;border-radius:6px;border:none;font-size:.78rem;background:rgba(255,255,255,.15);color:white;outline:none;cursor:pointer;">
           <option value="all">All — PH + Upstream</option>
           <option value="ph">Petroleum House only</option>
@@ -1219,7 +1312,7 @@
     </div>
     <!-- Preparer note -->
     <div style="margin-top:.85rem;display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;">
-      <label style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;">③ Preparer's Note (optional):</label>
+      <label style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;">④ Preparer's Note (optional):</label>
       <input type="text" id="rpt-note" placeholder="e.g. Prepared for Q2 Board Review. Data current as of 31 May 2026." style="flex:1;min-width:240px;padding:.38rem .65rem;border-radius:6px;border:1px solid rgba(255,255,255,.4);font-size:.75rem;background:rgba(255,255,255,.2);color:white;outline:none;" />
     </div>
       </div>
@@ -1808,6 +1901,26 @@ const ADMIN_EMAIL = "n.antwiyeboah@gnpcghana.com";
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const MFULL  = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+// ── SITE DEFINITIONS ──
+const SITES = {
+  ph:  { key:"ph",   name:"Petroleum House",             short:"PH",           icon:"🏢", location:"Tema" },
+  ratc:{ key:"ratc", name:"Research & Technology Centre", short:"RATC",         icon:"🔬", location:"Accra" },
+  gtc: { key:"gtc",  name:"GNPC Training Centre",         short:"GTC",          icon:"🎓", location:"Accra" },
+  eh:  { key:"eh",   name:"Energy House, Takoradi",       short:"Energy House", icon:"🏭", location:"Takoradi" }
+};
+
+const ratcData = {
+  energy: { 2025:{kwh:Array(12).fill(null),cost:Array(12).fill(null)}, 2026:{kwh:Array(12).fill(null),cost:Array(12).fill(null)} },
+  water:  { 2025:{months:[],litres:[],cost_ghc:[]}, 2026:{months:[],litres:[],cost_ghc:[]} },
+  waste:  { general:{2025:Array(12).fill(null),2026:Array(12).fill(null)}, plastic:{2025:Array(12).fill(null),2026:Array(12).fill(null)} }
+};
+
+const gtcData = {
+  energy: { 2025:{kwh:Array(12).fill(null),cost:Array(12).fill(null)}, 2026:{kwh:Array(12).fill(null),cost:Array(12).fill(null)} },
+  water:  { 2025:{months:[],litres:[],cost_ghc:[]}, 2026:{months:[],litres:[],cost_ghc:[]} },
+  waste:  { general:{2025:Array(12).fill(null),2026:Array(12).fill(null)}, plastic:{2025:Array(12).fill(null),2026:Array(12).fill(null)} }
+};
+
 // ── ENERGY HOUSE (Takoradi) — separate facility from Petroleum House ──
 const energyHouseData = {
   2025: {
@@ -1950,7 +2063,7 @@ window.vehicleRegistry = [
   { reg:"GM 181-17",  fuel:"Petrol",  type:"Sedan",    year:"2017", km:35191.66,  litres:2652.87, co2e:6.13  },
   { reg:"GN 1026-17", fuel:"Diesel",  type:"SUV",      year:"2017", km:24563.60,  litres:2885.09, co2e:7.67  },
   { reg:"GN 186-17",  fuel:"Petrol",  type:"Sedan",    year:"2017", km:4122.00,   litres:565.52,  co2e:1.31  },
-  { reg:"GN 5103-16", fuel:"Diesel",  type:"Pick-Up",  year:"2016", km:13716.88,  litres:1834.17, co2e:4.87  },
+  { reg:"GN 5103-16", fuel:"Diesel",  type:"Pick-Up",  year:"2016", km:13716.88,  litres:1834.17, co2e:4.87,  home_base:"ratc", note:"RATC dedicated" },
   { reg:"GN 6531-19", fuel:"Diesel",  type:"Bus",      year:"2019", km:33978.62,  litres:6430.03, co2e:17.05 },
   { reg:"GS 463-24",  fuel:"Diesel",  type:"Mini-van", year:"2024", km:31183.19,  litres:3947.53, co2e:10.46 },
   { reg:"GS 495-24",  fuel:"Diesel",  type:"Mini-van", year:"2024", km:45058.73,  litres:4434.48, co2e:11.80 },
@@ -1960,7 +2073,7 @@ window.vehicleRegistry = [
   { reg:"GT 2575-18", fuel:"Diesel",  type:"Pick-Up",  year:"2018", km:15031.09,  litres:1468.53, co2e:3.90  },
   { reg:"GT 2576-18", fuel:"Diesel",  type:"Pick-Up",  year:"2018", km:54842.25,  litres:3009.01, co2e:6.58  },
   { reg:"GT 782-22",  fuel:"Diesel",  type:"SUV",      year:"2022", km:4556.38,   litres:1019.84, co2e:2.67  },
-  { reg:"GT 8030-22", fuel:"Petrol",  type:"SUV",      year:"2022", km:0,         litres:80.64,   co2e:0.19  },
+  { reg:"GT 8030-22", fuel:"Petrol",  type:"SUV",      year:"2022", km:0,         litres:80.64,   co2e:0.19,  home_base:"eh",   note:"Energy House dedicated" },
   { reg:"GT 8590-20", fuel:"Diesel",  type:"Bus",      year:"2020", km:34573.88,  litres:7596.57, co2e:20.12 },
   { reg:"GW 2184-19", fuel:"Diesel",  type:"Pick-Up",  year:"2019", km:16586.00,  litres:1310.47, co2e:3.50  },
   { reg:"GW 2983-18", fuel:"Petrol",  type:"Sedan",    year:"2018", km:13457.25,  litres:1492.17, co2e:3.42  },
@@ -4640,9 +4753,7 @@ function buildOverview() {
 }
 
 function buildEnergy() {
-  const yr = window._phEnYear || 2026;
-  renderPHEnergy(yr);
-  buildPHEnergyCharts(yr);
+  switchEnergyLocation(document.querySelector('.en-loc-btn[data-loc="all"]'), "all");
 }
 
 function buildPHEnergyCharts(yr) {
@@ -4794,21 +4905,139 @@ function setWaterYear(yr, btn) {
 // ── ENERGY HOUSE — Location switcher ──
 window._ehYear = 2026;
 
+// ── MULTI-SITE ELECTRICITY ──
+window._enLoc   = "all";
+window._ratcYr  = 2026;
+window._gtcYr   = 2026;
+
 function switchEnergyLocation(btn, loc) {
-  // Update tab styles
   document.querySelectorAll(".en-loc-btn").forEach(function(b) {
     var active = b.dataset.loc === loc;
     b.style.borderBottomColor = active ? "var(--green)" : "transparent";
     b.style.color             = active ? "var(--green)" : "var(--mid)";
     b.style.fontWeight        = active ? "700"          : "600";
   });
-  // Show/hide panels
-  var phPanel = document.getElementById("en-ph-panel");
-  var ehPanel = document.getElementById("en-eh-panel");
-  if (phPanel) phPanel.style.display = loc === "ph" ? "" : "none";
-  if (ehPanel) ehPanel.style.display = loc === "eh" ? "" : "none";
-  // Render Energy House if switching to it
-  if (loc === "eh") renderEnergyHouse(window._ehYear);
+  window._enLoc = loc;
+  var panels = { all:"en-all-panel", ph:"en-ph-panel", ratc:"en-ratc-panel", gtc:"en-gtc-panel", eh:"en-eh-panel" };
+  Object.keys(panels).forEach(function(k) {
+    var el = document.getElementById(panels[k]);
+    if (el) el.style.display = k === loc ? "" : "none";
+  });
+  if (loc === "all")  { renderAllSitesEnergy(); }
+  if (loc === "ph")   { renderPHEnergy(window._phEnYear||2026); buildPHEnergyCharts(window._phEnYear||2026); }
+  if (loc === "eh")   { renderEnergyHouse(window._ehYear||2026); }
+  if (loc === "ratc") { renderSiteEnergy("ratc", window._ratcYr||2026); }
+  if (loc === "gtc")  { renderSiteEnergy("gtc",  window._gtcYr||2026); }
+}
+
+function setSiteEnergyYear(site, yr, btn) {
+  window["_"+site+"Yr"] = yr;
+  document.querySelectorAll("."+site+"-yr-btn").forEach(function(b) {
+    var active = parseInt(b.dataset.yr) === yr;
+    b.style.background  = active ? "var(--green)" : "transparent";
+    b.style.borderColor = active ? "var(--green)" : "var(--border)";
+    b.style.color       = active ? "white"        : "var(--mid)";
+    b.style.fontWeight  = active ? "700"          : "600";
+  });
+  renderSiteEnergy(site, yr);
+}
+
+function renderSiteEnergy(site, yr) {
+  var sdata    = site === "ratc" ? ratcData.energy : gtcData.energy;
+  var siteName = site === "ratc" ? "Research & Technology Centre (RATC)" : "GNPC Training Centre (GTC)";
+  var d        = sdata[yr] || { kwh:Array(12).fill(null), cost:Array(12).fill(null) };
+  var kwh      = d.kwh  || Array(12).fill(null);
+  var cost     = d.cost || Array(12).fill(null);
+  var moData   = kwh.filter(function(v){return v!==null;});
+  var totKwh   = moData.reduce(function(s,v){return s+v;},0);
+  var totCost  = cost.filter(function(v){return v!==null;}).reduce(function(s,v){return s+v;},0);
+  var totCO2   = +(totKwh*0.00044).toFixed(2);
+  var moCount  = moData.length;
+  var setEl    = function(id,v){var el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl(site+"-en-ct",       "Monthly Consumption (kWh) — "+yr);
+  setEl(site+"-cost-ct",     "Monthly Bill (GH¢) — "+yr);
+  setEl(site+"-en-table-ct", siteName+" — Electricity "+yr);
+  var kpiEl = document.getElementById(site+"-en-kpi");
+  if (kpiEl) kpiEl.innerHTML = moCount === 0
+    ? '<div class="sc" style="grid-column:span 4;text-align:center;color:var(--grey);font-style:italic;padding:1rem;">Framework ready — no '+yr+' data recorded yet. Use + Add Data to log bills.</div>'
+    : '<div class="sc bl" style="border:2px solid var(--blue);"><div class="lb" style="color:var(--blue);font-weight:800;">YTD Consumption</div><div class="vl">'+totKwh.toLocaleString()+'</div><div class="sb">kWh · '+moCount+' months</div></div>'+
+      '<div class="sc or" style="border:2px solid var(--orange);"><div class="lb" style="color:var(--orange);font-weight:800;">Scope 2</div><div class="vl">'+totCO2+'</div><div class="sb">tCO₂e</div></div>'+
+      '<div class="sc gd" style="border:2px solid var(--gold);"><div class="lb" style="color:var(--gold);font-weight:800;">Total Cost</div><div class="vl" style="font-size:1.1rem;">GH¢ '+totCost.toLocaleString(undefined,{maximumFractionDigits:0})+'</div><div class="sb">ECG billing</div></div>'+
+      '<div class="sc"><div class="lb">Monthly Avg</div><div class="vl">'+(moCount?Math.round(totKwh/moCount).toLocaleString():"—")+'</div><div class="sb">kWh</div></div>';
+  mkChart(site+"-en-chart",   "bar", MONTHS, [{label:"kWh", data:kwh,  backgroundColor:"#2B7CB5",borderRadius:4}],{plugins:{legend:{display:false}}});
+  mkChart(site+"-cost-chart", "bar", MONTHS, [{label:"GH¢",data:cost,backgroundColor:"#C59332",borderRadius:4}],{plugins:{legend:{display:false}}});
+  var tbody = document.getElementById(site+"-en-tbody");
+  if (!tbody) return;
+  tbody.innerHTML = MONTHS.map(function(m,i){
+    var k=kwh[i]; var c=cost[i];
+    if(k===null) return '<tr style="color:var(--grey);font-style:italic;"><td>'+m+'</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="cbadge bgr">Pending</span></td></tr>';
+    return '<tr><td><strong>'+m+'</strong></td><td class="num">'+k.toLocaleString()+'</td><td class="num">GH¢ '+c.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</td><td class="num">'+(k*0.00044).toFixed(3)+'</td><td><span class="cbadge cok">✅ Recorded</span></td></tr>';
+  }).join("")+'<tr style="background:var(--lgold);font-weight:700;"><td>Total</td><td class="num">'+totKwh.toLocaleString()+'</td><td class="num">GH¢ '+totCost.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'</td><td class="num">'+totCO2+'</td><td>—</td></tr>';
+}
+
+function renderAllSitesEnergy() {
+  var sites = [
+    { key:"ph",   name:"Petroleum House",       data:energyData,     yr:window._phEnYear||2026, color:"#1A6B3E" },
+    { key:"ratc", name:"RATC",                  data:ratcData.energy, yr:window._ratcYr||2026,   color:"#2B7CB5" },
+    { key:"gtc",  name:"GTC",                   data:gtcData.energy,  yr:window._gtcYr||2026,    color:"#C59332" },
+    { key:"eh",   name:"Energy House",           data:energyHouseData, yr:window._ehYear||2026,   color:"#0D9488" }
+  ];
+  var kpiEl = document.getElementById("en-all-kpi");
+  if (kpiEl) kpiEl.innerHTML = sites.map(function(s){
+    var d=s.data[s.yr]||{}; var kwh=d.kwh||Array(12).fill(null);
+    var tot=kwh.reduce(function(a,v){return a+(v||0);},0);
+    var mos=kwh.filter(function(v){return v!==null;}).length;
+    return '<div class="sc" style="border-left:4px solid '+s.color+';"><div class="lb" style="color:'+s.color+';font-weight:800;">'+s.name+'</div>'+
+      '<div class="vl" style="font-size:1.2rem;">'+(tot>0?tot.toLocaleString():"—")+'</div>'+
+      '<div class="sb">'+(tot>0?'kWh · '+mos+' months · '+(tot*0.00044).toFixed(1)+' tCO₂e':'No data yet')+'</div></div>';
+  }).join("");
+  mkChart("en-all-chart","bar",MONTHS,sites.map(function(s){
+    var d=s.data[s.yr]||{};
+    return{label:s.name,data:d.kwh||Array(12).fill(null),backgroundColor:s.color,borderRadius:3};
+  }),{plugins:{legend:{display:true,labels:{font:{size:9},boxWidth:12}}}});
+  var tbody=document.getElementById("en-all-tbody");
+  if(tbody) tbody.innerHTML=sites.map(function(s){
+    var d=s.data[s.yr]||{}; var kwh=d.kwh||Array(12).fill(null);
+    var tot=kwh.reduce(function(a,v){return a+(v||0);},0);
+    var cos=(d.cost||Array(12).fill(null)).reduce(function(a,v){return a+(v||0);},0);
+    var mos=kwh.filter(function(v){return v!==null;}).length;
+    var badge=mos>0?'<span class="cbadge cok">✅ '+mos+' months</span>':'<span class="cbadge bgr">Pending</span>';
+    return '<tr><td><strong>'+s.name+'</strong></td><td>'+s.yr+' YTD</td>'+
+      '<td class="num">'+(tot>0?tot.toLocaleString():"—")+'</td>'+
+      '<td class="num">'+(cos>0?'GH¢ '+cos.toLocaleString(undefined,{maximumFractionDigits:0}):"—")+'</td>'+
+      '<td class="num">'+(tot>0?(tot*0.00044).toFixed(2):"—")+'</td><td>'+badge+'</td></tr>';
+  }).join("");
+}
+
+// ── MULTI-SITE WATER ──
+function switchWaterSite(btn, loc) {
+  document.querySelectorAll(".wt-loc-btn").forEach(function(b) {
+    var active = b.dataset.loc === loc;
+    b.style.borderBottomColor = active ? "var(--green)" : "transparent";
+    b.style.color             = active ? "var(--green)" : "var(--mid)";
+    b.style.fontWeight        = active ? "700"          : "600";
+  });
+  var panels = { ph:"wt-ph-panel", ratc:"wt-ratc-panel", gtc:"wt-gtc-panel", eh:"wt-eh-panel" };
+  Object.keys(panels).forEach(function(k){
+    var el=document.getElementById(panels[k]);
+    if(el) el.style.display = k===loc?"":"none";
+  });
+  if (loc==="ph") buildWaterPage(window._waterYear||2025);
+}
+
+// ── VEHICLE REGISTRY SITE FILTER ──
+window._fleetSite = "all";
+
+function setFleetSite(site, btn) {
+  window._fleetSite = site;
+  document.querySelectorAll(".fleet-site-btn").forEach(function(b) {
+    var active = b.dataset.site === site;
+    b.style.background  = active ? "var(--green)" : "transparent";
+    b.style.borderColor = active ? "var(--green)" : "var(--border)";
+    b.style.color       = active ? "white"        : "var(--mid)";
+    b.style.fontWeight  = active ? "700"          : "600";
+  });
+  renderVehicleRegistry();
 }
 
 function setEHYear(yr, btn) {
