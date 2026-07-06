@@ -2246,6 +2246,110 @@ async function doForgotPassword() {
   } catch(e) { alert("Could not send reset email: " + e.message); }
 }
 
+// ── SYNC ALL DATA FROM SUPABASE ──
+async function syncAllDataFromSupabase() {
+  if (!window.supabaseClient || !window.currentUserEmail) return;
+  try {
+    console.log("🔄 Syncing data from Supabase...");
+
+    // Sync energy data
+    const { data: energyRows } = await window.supabaseClient
+      .from("petroleum_house_energy").select("*").order("created_at");
+    if (energyRows && energyRows.length > 0) {
+      energyRows.forEach(r => {
+        const yr = r.year; const mo = r.month_index;
+        if (!energyData[yr]) energyData[yr] = { kwh: Array(12).fill(null), cost: Array(12).fill(null), tariff: Array(12).fill(null) };
+        if (mo >= 0 && mo < 12) {
+          if (r.kwh !== null) energyData[yr].kwh[mo] = r.kwh;
+          if (r.cost_ghc !== null) energyData[yr].cost[mo] = r.cost_ghc;
+          if (r.tariff !== null) energyData[yr].tariff[mo] = r.tariff;
+        }
+      });
+    }
+
+    // Sync waste data
+    const { data: wasteRows } = await window.supabaseClient
+      .from("petroleum_house_waste").select("*").order("created_at");
+    if (wasteRows && wasteRows.length > 0) {
+      wasteRows.forEach(r => {
+        const yr = r.year; const mo = r.month_index;
+        if (mo >= 0 && mo < 12) {
+          if (!wasteData.general[yr]) wasteData.general[yr] = Array(12).fill(null);
+          if (!wasteData.plastic[yr]) wasteData.plastic[yr] = Array(12).fill(null);
+          if (r.general_kg !== null) wasteData.general[yr][mo] = r.general_kg;
+          if (r.plastic_kg !== null) wasteData.plastic[yr][mo] = r.plastic_kg;
+        }
+      });
+    }
+
+    // Sync water data
+    const { data: waterRows } = await window.supabaseClient
+      .from("petroleum_house_water").select("*").order("created_at");
+    if (waterRows && waterRows.length > 0) {
+      waterRows.forEach(r => {
+        const yr = parseInt(r.year);
+        if (!window.waterData[yr]) window.waterData[yr] = { months: [], litres: [], cost_ghc: [] };
+        if (!window.waterData[yr].months.includes(r.month)) {
+          window.waterData[yr].months.push(r.month);
+          window.waterData[yr].litres.push(r.volume_m3 || 0);
+          window.waterData[yr].cost_ghc.push(r.cost_ghc || 0);
+        }
+      });
+    }
+
+    // Sync fleet data
+    const { data: fleetRows } = await window.supabaseClient
+      .from("petroleum_house_fleet").select("*").order("created_at");
+    if (fleetRows && fleetRows.length > 0) {
+      fleetRows.forEach(r => {
+        window._fleetSupabaseRows = window._fleetSupabaseRows || [];
+        window._fleetSupabaseRows.push(r);
+      });
+    }
+
+    // Sync travel data
+    const { data: travelRows } = await window.supabaseClient
+      .from("petroleum_house_travel").select("*").order("created_at");
+    if (travelRows && travelRows.length > 0) {
+      travelRows.forEach(r => {
+        window._travelSupabaseRows = window._travelSupabaseRows || [];
+        window._travelSupabaseRows.push(r);
+      });
+    }
+
+    // Retry offline queue
+    const queue = window._offlineQueue || [];
+    const remaining = [];
+    for (const item of queue) {
+      const { error } = await window.supabaseClient.from(item.table).insert(item.payload);
+      if (error) remaining.push(item);
+    }
+    window._offlineQueue = remaining;
+
+    updateLiveStatCards();
+
+    // Re-check admin tab visibility after sync
+    (function() {
+      try {
+        var ab = document.getElementById("admin-nav-btn");
+        if (!ab) return;
+        var ue = (window.currentUserEmail || "").trim().toLowerCase();
+        var ae = (ADMIN_EMAIL || "").trim().toLowerCase();
+        if (ue && ae && ue === ae) ab.style.display = "flex";
+      } catch(e) {}
+    })();
+
+    if ((queue.length === 0) || remaining.length < queue.length) {
+      const banner = document.getElementById("offline-banner");
+      if (banner && remaining.length === 0) banner.style.display = "none";
+    }
+
+    console.log("✅ Supabase sync complete");
+  } catch(e) {
+    console.warn("Sync error:", e.message);
+  }
+}
+
 // Handle Supabase Auth session on page load (handles password reset redirects)
 window.addEventListener("DOMContentLoaded", async () => {
   const { data: { session } } = await window.supabaseClient.auth.getSession();
