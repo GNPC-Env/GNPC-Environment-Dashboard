@@ -4093,7 +4093,7 @@ window.BUILDERS = {
   water:          buildWaterPage,
   status:         buildStatus,
   carbon:         buildCarbonTab,
-  admin:          () => { if (window.currentUser && window.currentUser.toLowerCase() === ADMIN_EMAIL.toLowerCase()) { loadEquityInputsFromStorage(); } else { document.getElementById('page-admin').innerHTML = '<div class="ph"><div class="phi">🔒</div><h3>Access Restricted</h3><p>Admin access is limited to the GNPC Environment Officer.</p></div>'; } }
+  admin:          () => { const ue = (window.currentUserEmail||"").trim().toLowerCase(); const ae = (ADMIN_EMAIL||"").trim().toLowerCase(); if (ue && ae && ue === ae) { loadEquityInputsFromStorage(); loadPlatformUsers(); } else { document.getElementById('page-admin').innerHTML = '<div class=\"ph\"><div class=\"phi\">🔒</div><h3>Access Restricted</h3><p>Admin access is limited to the GNPC Environment Officer.</p></div>'; } }
 };
 
 function buildSummary() {
