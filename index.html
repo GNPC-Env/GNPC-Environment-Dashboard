@@ -279,12 +279,9 @@
     <span id="live-s3-chip" style="display:none;"></span>
   </div>
 
-  <!-- ── DATA HEALTH CARD ── -->
-  <div id="data-health-card" style="background:white;border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--mid);white-space:nowrap;">Data Freshness</div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;flex:1;" id="data-health-chips"></div>
-    <button onclick="showTab('datacentre',document.querySelector('.nt[onclick*=datacentre]'))" style="font-size:.65rem;padding:.25rem .6rem;background:none;border:1px solid var(--border);border-radius:5px;color:var(--mid);cursor:pointer;white-space:nowrap;">View Data Centre →</button>
-  </div>
+  <!-- Data health chips hidden from overview — available in Data Centre -->
+  <div id="data-health-chips" style="display:none;"></div>
+  <div id="data-health-card" style="display:none;"></div>
 
   <!-- ══ ACCORDION SECTIONS ══ -->
 
@@ -408,9 +405,15 @@
             <div class="sc"><div class="lb">Food &amp; Pkg Waste</div><div class="vl" style="font-size:.85rem;color:var(--grey);">Pending</div><div class="sb">Collection not started</div></div>
           </div>
         </div>
-        <div class="card" style="margin:0;">
-          <div class="ct">Plastic Waste — PH Monthly (kg)</div>
-          <canvas id="ov-plastic"></canvas>
+        <div style="display:flex;flex-direction:column;gap:.65rem;">
+          <div class="card" style="margin:0;flex:1;">
+            <div class="ct">Plastic Waste — PH Monthly (kg)</div>
+            <canvas id="ov-plastic"></canvas>
+          </div>
+          <div class="card" style="margin:0;flex:1;">
+            <div class="ct">Water Consumption — PH 2025 (L)</div>
+            <canvas id="ov-water"></canvas>
+          </div>
         </div>
       </div>
       <!-- KPI snapshot -->
@@ -606,14 +609,32 @@
 
   <!-- Site tabs -->
   <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
-    <button class="wa-site-btn active" data-site="ph"   onclick="switchWasteSite(this,'ph')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
-    <button class="wa-site-btn"        data-site="ratc" onclick="switchWasteSite(this,'ratc')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
-    <button class="wa-site-btn"        data-site="gtc"  onclick="switchWasteSite(this,'gtc')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
-    <button class="wa-site-btn"        data-site="eh"   onclick="switchWasteSite(this,'eh')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
+    <button class="wa-site-btn active" data-site="summary" onclick="switchWasteSite(this,'summary')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 Summary</button>
+    <button class="wa-site-btn"        data-site="ph"      onclick="switchWasteSite(this,'ph')"      style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
+    <button class="wa-site-btn"        data-site="ratc"    onclick="switchWasteSite(this,'ratc')"    style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
+    <button class="wa-site-btn"        data-site="gtc"     onclick="switchWasteSite(this,'gtc')"     style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
+    <button class="wa-site-btn"        data-site="eh"      onclick="switchWasteSite(this,'eh')"      style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
+  </div>
+
+  <!-- Waste Summary panel -->
+  <div id="wa-summary-panel">
+    <div class="info"><span>📊</span><div><strong>Waste Summary — All Corporate Sites.</strong> Overview of waste generation and diversion across all GNPC facilities. Select a site tab above for detailed monthly data.</div></div>
+    <div id="wa-summary-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="card"><div class="ct">Plastic Waste by Site — 2026 YTD (kg)</div><canvas id="wa-summary-chart"></canvas></div>
+      <div class="card"><div class="ct">General Waste — PH Monthly (kg)</div><canvas id="wa-summary-gen-chart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Waste Summary by Site</div>
+      <div class="tw"><table>
+        <thead><tr><th>Site</th><th>General Waste</th><th>Plastic Waste</th><th>Food/Packaging</th><th>Status</th></tr></thead>
+        <tbody id="wa-summary-tbody"></tbody>
+      </table></div>
+    </div>
   </div>
 
   <!-- PH Waste panel (existing content) -->
-  <div id="wa-ph-panel">
+  <div id="wa-ph-panel" style="display:none;">
 
   <!-- Top bar: year selector + add button -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-bottom:.85rem;">
@@ -813,75 +834,653 @@
 
   <!-- Site tabs -->
   <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
-    <button class="wt-loc-btn active" data-loc="ph"   onclick="switchWaterSite(this,'ph')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
-    <button class="wt-loc-btn"        data-loc="ratc" onclick="switchWaterSite(this,'ratc')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
-    <button class="wt-loc-btn"        data-loc="gtc"  onclick="switchWaterSite(this,'gtc')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
-    <button class="wt-loc-btn"        data-loc="eh"   onclick="switchWaterSite(this,'eh')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
+    <button class="wt-loc-btn active" data-loc="summary" onclick="switchWaterSite(this,'summary')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 Summary</button>
+    <button class="wt-loc-btn"        data-loc="ph"      onclick="switchWaterSite(this,'ph')"      style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
+    <button class="wt-loc-btn"        data-loc="ratc"    onclick="switchWaterSite(this,'ratc')"    style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
+    <button class="wt-loc-btn"        data-loc="gtc"     onclick="switchWaterSite(this,'gtc')"     style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
+    <button class="wt-loc-btn"        data-loc="eh"      onclick="switchWaterSite(this,'eh')"      style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
   </div>
 
-  <!-- PH panel (existing content) -->
-  <div id="wt-ph-panel">
-
-  <!-- Header -->
-  <div style="background:linear-gradient(135deg,#0a4a6e 0%,var(--blue) 100%);border-radius:12px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
-    <div>
-      <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin-bottom:.2rem;">GNPC · Petroleum House</div>
-      <div style="font-size:1.05rem;font-weight:800;color:white;">Water Consumption</div>
-      <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-top:.15rem;" id="wt-header-sub">Jan–Jul 2025 · GH¢ 59,334.18 total cost</div>
-    </div>
-    <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
-      <div style="display:flex;gap:.35rem;">
-        <button class="wt-yr-btn" data-yr="2026" onclick="setWaterYear(2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);font-size:.73rem;font-weight:600;cursor:pointer;">2026</button>
-        <button class="wt-yr-btn" data-yr="2025" onclick="setWaterYear(2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:.73rem;font-weight:700;cursor:pointer;">2025</button>
+  <!-- Water Summary panel -->
+  <div id="wt-summary-panel">
+    <div class="info"><span>📊</span><div><strong>Water Summary — All Corporate Sites.</strong> Water consumption overview across all GNPC facilities. Select a site tab above for detailed monthly data.</div></div>
+    <div id="wt-summary-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="card"><div class="ct">Monthly Water Consumption — PH 2025 (Litres)</div><canvas id="wt-summary-chart"></canvas></div>
+      <div class="card">
+        <div class="ct">Coverage Status by Site</div>
+        <div class="tw"><table>
+          <thead><tr><th>Site</th><th>Data Available</th><th>Latest Period</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Petroleum House</strong></td><td>Jan–Jul 2025</td><td>July 2025</td><td><span class="cbadge cok">✅ Active</span></td></tr>
+            <tr><td><strong>RATC</strong></td><td>—</td><td>—</td><td><span class="cbadge bgr">🔄 Pending</span></td></tr>
+            <tr><td><strong>GTC</strong></td><td>—</td><td>—</td><td><span class="cbadge bgr">🔄 Pending</span></td></tr>
+            <tr><td><strong>Energy House</strong></td><td>—</td><td>—</td><td><span class="cbadge bgr">🔄 Pending</span></td></tr>
+          </tbody>
+        </table></div>
       </div>
-      <button onclick="openEntry('water')" class="hbtn gold">+ Add Water Data</button>
     </div>
   </div>
 
-  <!-- KPI Cards — dynamic -->
-  <div id="wt-kpi-row" class="sr s4" style="margin-bottom:1rem;"></div>
-  <!-- Hidden span for legacy updateLiveStatCards -->
-  <span id="wt-avg-vol" style="display:none;">297,000</span>
+  <!-- PH Water panel -->
+  <div id="wt-ph-panel" style="display:none;">
 
-  <!-- Standard range note — Jan only -->
-  <div id="wt-std-range-note" style="background:#EBF4FB;border:1px solid #93C5FD;border-radius:8px;padding:.65rem 1rem;margin-bottom:1rem;font-size:.75rem;color:#1E3A5F;display:flex;gap:.6rem;">
-    <span>📐</span>
-    <div><strong>January 2025 only — Standard Range Reference:</strong> Ghana Water Company standard range for this facility is <strong>511,031 – 681,374 litres/month</strong>.
-    January 2025 actual consumption of <strong>227,000 litres is below this range</strong>, which may reflect reduced occupancy, billing period differences, or seasonal variation.
-    A standard range for other months is not currently available — this reference applies to January only.</div>
-  </div>
+  ng="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GNPC — Environmental Performance Platform</title>
 
-  <!-- Charts -->
-  <div class="g2" style="margin-bottom:1rem;">
-    <div class="card"><div class="ct">Monthly Water Consumption — 2025 (Litres)</div><canvas id="wt-volume-chart"></canvas></div>
-    <div class="card"><div class="ct">Monthly Water Cost — 2025 (GH¢)</div><canvas id="wt-cost-chart"></canvas></div>
-  </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Monthly data table -->
-  <div class="card" style="margin-bottom:1rem;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;">
-      <div class="ct" style="margin:0;border:none;padding:0;">Monthly Water Data — Petroleum House 2025</div>
-      <span style="font-size:.68rem;color:var(--grey);">Aug–Dec: data not yet available</span>
+<script>
+  const SUPABASE_URL = "https://ukjfqfcddvmbgmxitgsv.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVramZxZmNkZHZtYmdteGl0Z3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3OTQyNTAsImV4cCI6MjA5NzM3MDI1MH0.kucXa5gUTT-MBUYyh0TXMPhAFcS7tBBpPDljEJxEr8k";
+  window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
+<style>
+  :root{--green:#1A6B3E;--dgreen:#124D2C;--lgreen:#E8F5ED;--gold:#C59332;--lgold:#FDF6E3;--blue:#2B7CB5;--lblue:#EBF4FB;--red:#C53030;--lred:#FEF2F2;--orange:#D97706;--lorange:#FFFBEB;--teal:#0D9488;--lteal:#F0FDFA;--slate:#1E293B;--mid:#475569;--light:#F1F5F2;--border:#D4E6DA;--white:#FFFFFF;--grey:#64748B;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--light);color:var(--slate);}
+  header{background:var(--green);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+  .hl{display:flex;align-items:center;gap:.6rem;}
+  .ht h1{font-size:.9rem;font-weight:700;letter-spacing:.05em;color:white;}
+  .ht p{font-size:.63rem;color:rgba(255,255,255,.6);}
+  .hr2{display:flex;align-items:center;gap:.6rem;}
+  .hdate{font-size:.68rem;color:rgba(255,255,255,.6);}
+  .hbtn{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);padding:.3rem .8rem;border-radius:6px;font-size:.73rem;font-weight:600;cursor:pointer;transition:background .15s;}
+  .hbtn:hover{background:rgba(255,255,255,.25);}
+  .hbtn.gold{background:var(--gold);border-color:var(--gold);}
+  .hbtn.gold:hover{background:#a37a28;}
+  .scope-banner{display:flex;align-items:center;gap:0;background:var(--dgreen);padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.08);}
+  .scope-btn{padding:.48rem 1rem;font-size:.7rem;font-weight:700;cursor:pointer;color:rgba(255,255,255,.55);border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;}
+  .scope-btn:hover{color:white;}
+  .scope-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+  .sdiv{width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 .2rem;}
+  nav{background:#1a3a2a;display:flex;padding:0 1.5rem;overflow-x:auto;gap:0;}
+  .nt{padding:.52rem .95rem;color:rgba(255,255,255,.55);font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;}
+  .nt:hover{color:white;}
+  .nt.active{color:var(--gold);border-bottom-color:var(--gold);}
+  .page{display:none;padding:1.3rem;max-width:1400px;margin:0 auto;}
+  .page.active{display:block;}
+  .sr{display:grid;gap:.85rem;margin-bottom:1rem;}
+  .s5{grid-template-columns:repeat(5,1fr);}
+  .s4{grid-template-columns:repeat(4,1fr);}
+  .s3{grid-template-columns:repeat(3,1fr);}
+  .s2{grid-template-columns:repeat(2,1fr);}
+  .sc{background:white;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .sc .lb{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.28rem;}
+  .sc .vl{font-size:1.6rem;font-weight:800;color:var(--green);line-height:1;}
+  .sc .sb{font-size:.63rem;color:var(--grey);margin-top:.2rem;}
+  .sc.gd .vl{color:var(--gold);}
+  .sc.bl .vl{color:var(--blue);}
+  .sc.or .vl{color:var(--orange);}
+  .sc.tl .vl{color:var(--teal);}
+  .sc.gr .vl{color:var(--grey);}
+  .sc.rd .vl{color:var(--red);}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;}
+  .g31{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1rem;}
+  /* Chart cards — fixed height so charts never stretch */
+  .card{background:white;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card.full{grid-column:1/-1;}
+  .card canvas{display:block;width:100% !important;height:200px !important;max-height:200px !important;}
+  .ct{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);margin-bottom:.75rem;padding-bottom:.45rem;border-bottom:2px solid var(--lgreen);}
+  .sl{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin:1rem 0 .5rem;display:flex;align-items:center;gap:.5rem;}
+  .sl::after{content:"";flex:1;height:1px;background:var(--border);}
+  .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;}
+  .kpi{background:white;border-radius:9px;padding:.75rem .85rem;border:1px solid var(--border);display:flex;align-items:center;gap:.65rem;}
+  .kdot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+  .kdot.g{background:#22C55E;}
+  .kdot.a{background:#F59E0B;}
+  .kdot.r{background:#EF4444;}
+  .kdot.gr{background:#CBD5E0;}
+  .kn{font-size:.7rem;font-weight:700;color:var(--slate);}
+  .kv{font-size:.65rem;color:var(--grey);}
+  .pending{background:var(--lteal);border:1px solid var(--teal);border-radius:9px;padding:.85rem 1rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.65rem;}
+  .pending h4{font-size:.76rem;font-weight:700;color:var(--teal);margin-bottom:.18rem;}
+  .pending p{font-size:.7rem;color:var(--mid);}
+  .alert{background:var(--lorange);border:1px solid var(--orange);border-radius:9px;padding:.75rem .95rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.65rem;font-size:.73rem;color:var(--slate);}
+  .info{background:var(--lblue);border:1px solid var(--blue);border-radius:9px;padding:.75rem .95rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.65rem;font-size:.73rem;color:var(--slate);}
+  .ftabs{display:flex;gap:.45rem;margin-bottom:1rem;flex-wrap:wrap;}
+  .ftab{padding:.32rem .8rem;font-size:.73rem;font-weight:600;border-radius:6px;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--mid);transition:all .15s;}
+  .ftab.active{background:var(--green);color:white;border-color:var(--green);}
+  .cbadge{display:inline-block;padding:.1rem .45rem;border-radius:6px;font-size:.68rem;font-weight:700;}
+  .cok{background:var(--lgreen);color:var(--green);}
+  .cwarn{background:var(--lorange);color:var(--orange);}
+  .cflag{background:var(--lred);color:var(--red);}
+  .tw{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:.77rem;}
+  thead th{background:var(--green);color:white;padding:.48rem .72rem;text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  tbody tr:nth-child(even){background:var(--lgreen);}
+  tbody tr:hover{background:#c8ddd0;}
+  tbody td{padding:.45rem .72rem;border-bottom:1px solid var(--border);}
+  td.num{text-align:right;font-weight:600;}
+  .badge{display:inline-block;padding:.1rem .4rem;border-radius:20px;font-size:.63rem;font-weight:700;}
+  .bg{background:var(--lgreen);color:var(--green);}
+  .ba{background:var(--lgold);color:var(--gold);}
+  .bgr{background:#F0F0F0;color:var(--grey);}
+  .leg{display:flex;gap:.85rem;flex-wrap:wrap;margin-bottom:.6rem;}
+  .li{display:flex;align-items:center;gap:.28rem;font-size:.68rem;color:var(--mid);}
+  .ld{width:9px;height:9px;border-radius:50%;}
+  .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;color:var(--grey);text-align:center;gap:.4rem;}
+  .phi{font-size:2.5rem;opacity:.4;}
+  .ph h3{font-size:.95rem;font-weight:600;color:var(--mid);}
+  .ph p{font-size:.73rem;max-width:340px;}
+  .scope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-top:.5rem;}
+  .scope-box{border-radius:9px;padding:.85rem;}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center;}
+  .overlay.open{display:flex;}
+  .modal{background:white;border-radius:12px;padding:1.5rem;width:540px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2);}
+  .modal h2{font-size:.92rem;color:var(--green);margin-bottom:.95rem;font-weight:700;}
+  .mtabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:.85rem;overflow-x:auto;}
+  .mt{padding:.35rem .9rem;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--mid);border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;}
+  .mt.active{color:var(--green);border-bottom-color:var(--green);}
+  .ms{display:none;}
+  .ms.active{display:block;}
+  .fr{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem;}
+  .fg{display:flex;flex-direction:column;gap:.2rem;}
+  .fg.full{grid-column:1/-1;}
+  label{font-size:.66rem;font-weight:600;color:var(--mid);}
+  input,select,textarea{padding:.4rem .58rem;border:1.5px solid var(--border);border-radius:6px;font-size:.78rem;color:var(--slate);outline:none;width:100%;background:white;transition:border-color .15s;}
+  input:focus,select:focus,textarea:focus{border-color:var(--green);}
+  textarea{resize:vertical;min-height:58px;}
+  hr.dv{border:none;border-top:1px solid var(--border);margin:.6rem 0;}
+  .mfa{display:flex;gap:.52rem;justify-content:flex-end;margin-top:.85rem;padding-top:.65rem;border-top:1px solid var(--border);position:sticky;bottom:0;background:white;z-index:1;}
+  .btnc{background:none;border:1.5px solid var(--border);padding:.4rem .82rem;border-radius:6px;cursor:pointer;font-size:.76rem;color:var(--mid);}
+  .btns{background:var(--green);color:white;border:none;padding:.4rem 1.05rem;border-radius:6px;cursor:pointer;font-size:.76rem;font-weight:700;}
+  .btns:hover{background:var(--dgreen);}
+  .hint{font-size:.66rem;color:var(--grey);margin-bottom:.52rem;background:var(--light);padding:.42rem .58rem;border-radius:6px;}
+  @media(max-width:900px){
+    .s5,.s4{grid-template-columns:repeat(2,1fr);}
+    .s3{grid-template-columns:1fr 1fr;}
+    .g2,.g3,.g31,.kgrid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     LOCK SCREEN
+═══════════════════════════════════════════════ -->
+<div id="lockScreen" style="position:fixed;inset:0;background:var(--green);z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:16px;padding:2.5rem;width:400px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center;">
+    <img src="logo.png" alt="GNPC Logo" style="height:72px;width:auto;margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
+    <h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:8px;font-weight:600;">Ghana National Petroleum Corporation</h2>
+    <h1 style="font-size:22px;color:var(--green);margin-bottom:6px;font-weight:700;line-height:1.2;">Environmental Performance Platform</h1>
+    <p style="color:#64748b;font-size:13px;margin-bottom:24px;">Environment Department • Restricted Access</p>
+    <div id="auth-error" style="display:none;background:#FEE2E2;color:#B91C1C;padding:.6rem .85rem;border-radius:7px;font-size:.78rem;margin-bottom:14px;text-align:left;"></div>
+    <div style="margin-bottom:14px;text-align:left;">
+      <label style="font-size:10px;font-weight:600;color:#475569;text-transform:uppercase;display:block;margin-bottom:6px;letter-spacing:.05em;">Work Email</label>
+      <input type="email" id="loginEmail" placeholder="name@gnpc.com.gh" style="padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:6px;font-size:14px;background:#f8fafc;width:100%;color:var(--slate);outline:none;" onkeydown="if(event.key==='Enter')document.getElementById('loginPassword').focus()">
     </div>
-    <div class="tw"><table>
-      <thead><tr>
-        <th>Month</th><th>Volume (Litres)</th><th>Cost (GH¢)</th><th>vs Monthly Avg</th><th>Status</th>
-      </tr></thead>
-      <tbody id="wt-monthly-tbody"></tbody>
-    </table></div>
+    <div style="margin-bottom:8px;text-align:left;">
+      <label style="font-size:10px;font-weight:600;color:#475569;text-transform:uppercase;display:block;margin-bottom:6px;letter-spacing:.05em;">Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" style="padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:6px;font-size:14px;background:#f8fafc;letter-spacing:.12em;width:100%;outline:none;" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div style="text-align:right;margin-bottom:20px;">
+      <span onclick="doForgotPassword()" style="font-size:.72rem;color:var(--green);cursor:pointer;text-decoration:underline;">Forgot password?</span>
+    </div>
+    <button id="loginBtn" onclick="doLogin()" style="width:100%;background:var(--green);color:white;border:none;padding:.65rem 1.2rem;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;">Sign In</button>
+    <p style="font-size:.68rem;color:#94A3B8;margin-top:14px;">Access restricted to GNPC Environment Department personnel.<br>Contact your administrator if you cannot log in.</p>
   </div>
+</div>
 
-  <!-- Pending note — updated dynamically by buildWaterPage -->
-  <div class="pending" id="wt-pending-note">
-    <span style="font-size:1.1rem;">💧</span>
-    <div>
-      <h4 id="wt-pending-title">Remaining Months — Data Not Yet Available</h4>
-      <p>Use the + Add Water Data button to log remaining months when data becomes available. The dashboard will update automatically.</p>
+<!-- ═══════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════ -->
+<header>
+  <div class="hl">
+    <div class="ht">
+      <h1>Ghana National Petroleum Corporation</h1>
+      <p>Environmental Performance Platform</p>
     </div>
   </div>
+  <div class="hr2">
+    <span class="hdate" id="hdrDate"></span>
+    <button class="hbtn gold" onclick="openEntry(activeTab && ['up_overview','flaring','emissions_up','produced_water','production'].includes(activeTab) ? 'upstream' : activeTab === 'waste' ? 'waste' : activeTab === 'water' ? 'water' : activeTab === 'travel' ? 'travel' : 'energy')">+ Add Data</button>
+    <button class="hbtn" onclick="downloadTabPDF({tabId:activeTab,title:TAB_TITLES[activeTab]||'Report',filename:'GNPC_'+( TAB_TITLES[activeTab]||'Report').replace(/[^a-zA-Z0-9]/g,'_')+'_'+ new Date().toISOString().split('T')[0]+'.pdf'})" style="background:rgba(255,255,255,.15);">⬇ Export PDF</button>
+    <button class="hbtn" onclick="doSignOut()" style="background:rgba(255,0,0,.25);border-color:rgba(255,100,100,.4);" title="Sign out">⏻ Sign Out</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     SCOPE BANNER
+═══════════════════════════════════════════════ -->
+
+<div class="scope-banner">
+  <div class="scope-btn active" onclick="setScope('ph',this)">🏢 Corporate Sites</div>
+  <div class="sdiv"></div>
+  <div class="scope-btn" onclick="setScope('upstream',this)">⛽ JV Upstream Assets</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     NAV BARS
+═══════════════════════════════════════════════ -->
+<nav id="nav-ph" style="display:flex;align-items:stretch;">
+  <div class="nt active" onclick="showTab('overview',this)">📊 Overview</div>
+  <div class="nt" onclick="showTab('summary',this)">🌍 Executive Summary</div>
+  <div class="nt" onclick="showTab('carbon',this)">🌿 Carbon Credits</div>
+  <div style="width:1px;background:rgba(255,255,255,.25);margin:.3rem .2rem;flex-shrink:0;"></div>
+  <div class="nt" onclick="showTab('energy',this)">⚡ Electricity</div>
+  <div class="nt" onclick="showTab('waste',this)">🗑️ Waste</div>
+  <div class="nt" onclick="showTab('water',this)">💧 Water</div>
+  <div class="nt" onclick="showTab('travel',this)">✈️ Air Travel</div>
+  <div class="nt" onclick="showTab('vehicles',this)">🚗 Fleet & Vehicles</div>
+  <div class="nt" onclick="showTab('vehicles',this)">🚗 Vehicle Registry</div>
+  <div style="width:1px;background:rgba(255,255,255,.25);margin:.3rem .2rem;flex-shrink:0;"></div>
+  <div class="nt" onclick="showTab('datacentre',this)">📋 Data Centre</div>
+  <div class="nt" id="admin-nav-btn" onclick="showTab('admin',this)" style="display:none;">⚙️ Admin</div>
+</nav>
+<nav id="nav-upstream" style="display:none;">
+  <div class="nt active" onclick="showTab('up_overview',this)">📊 Overview</div>
+  <div class="nt" onclick="showTab('flaring',this)">🔥 Flaring</div>
+  <div class="nt" onclick="showTab('emissions_up',this)">💨 GHG Emissions</div>
+  <div class="nt" onclick="showTab('produced_water',this)">💧 Produced Water</div>
+  <div class="nt" onclick="showTab('production',this)">🛢️ Production</div>
+  <div class="nt" onclick="showTab('summary',this)">🌍 Executive Summary</div>
+  <div class="nt" onclick="showTab('carbon',this)">🌿 Carbon Credits</div>
+</nav>
+<nav id="nav-all" style="display:none;">
+  <div class="nt active" onclick="showTab('all_overview',this)">📊 Combined Overview</div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     PAGES
+═══════════════════════════════════════════════ -->
+
+<!-- OVERVIEW -->
+<div class="page active" id="page-overview">
+
+  <!-- ── TOTAL GNPC EMISSIONS BANNER ── -->
+  <div style="background:linear-gradient(135deg,var(--dgreen) 0%,var(--green) 55%,#1a5a8a 100%);border-radius:12px;padding:1.2rem 1.6rem;margin-bottom:.75rem;">
+
+    <!-- Header row -->
+    <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45);margin-bottom:.75rem;">
+      Ghana National Petroleum Corporation &nbsp;·&nbsp; Environment Department &nbsp;·&nbsp; 2026 YTD
+    </div>
+
+    <!-- Big number + split -->
+    <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;margin-bottom:.85rem;">
+      <!-- Headline total -->
+      <div>
+        <div style="font-size:.62rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">Total GNPC Emissions</div>
+        <div style="display:flex;align-items:baseline;gap:.4rem;">
+          <span style="font-size:2.8rem;font-weight:900;color:white;line-height:1;" id="live-gnpc-total">548,620</span>
+          <span style="font-size:.85rem;color:rgba(255,255,255,.55);font-weight:600;">tCO₂e</span>
+        </div>
+        <div style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:.2rem;">Corporate Sites + JV Upstream (100% field)</div>
+      </div>
+
+      <!-- Divider -->
+      <div style="width:1px;height:52px;background:rgba(255,255,255,.2);flex-shrink:0;"></div>
+
+      <!-- Corporate vs Upstream split -->
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;">Corporate Sites</div>
+          <div style="font-size:1.3rem;font-weight:800;color:var(--gold);" id="live-ph-total">285.57</div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.4);">tCO₂e · S1+S2+S3</div>
+        </div>
+        <div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;">JV Upstream (100% field)</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#7EC8E3;" id="live-upstream-banner">548,325</div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.4);">tCO₂e · S1 · Jubilee · TEN · OCTP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;border-top:1px solid rgba(255,255,255,.12);padding-top:.65rem;">
+      <div style="font-size:.6rem;color:rgba(255,255,255,.35);">⚠️ Mixed coverage periods — expand scope sections below for detail</div>
+      <button onclick="showTab('summary',document.querySelector('#nav-ph .nt:nth-child(2)'))" style="padding:.32rem .9rem;background:var(--gold);color:white;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;">📄 Generate Report</button>
+    </div>
+
+    <!-- Hidden IDs for compatibility -->
+    <span id="live-s1-chip" style="display:none;"></span>
+    <span id="live-s2-chip" style="display:none;"></span>
+    <span id="live-s3-chip" style="display:none;"></span>
+  </div>
+
+  <!-- Data health chips hidden from overview — available in Data Centre -->
+  <div id="data-health-chips" style="display:none;"></div>
+  <div id="data-health-card" style="display:none;"></div>
+
+  <!-- ══ ACCORDION SECTIONS ══ -->
+
+  <!-- SCOPE 1 accordion -->
+  <div class="ov-accordion" id="acc-s1" style="margin-bottom:.5rem;">
+    <button onclick="toggleAccordion('acc-s1')" style="width:100%;display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;background:white;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;">
+      <div style="width:5px;height:22px;background:#D97706;border-radius:3px;flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div style="font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#D97706;">Scope 1 — Direct Emissions</div>
+        <div style="font-size:.7rem;color:var(--mid);margin-top:.15rem;">Fleet + Upstream GHG (Jubilee · TEN · OCTP)</div>
+      </div>
+      <div style="font-size:1.2rem;font-weight:800;color:#D97706;" id="acc-s1-total">548,365</div>
+      <div style="font-size:.65rem;color:var(--grey);margin-left:.25rem;margin-right:.5rem;">tCO₂e</div>
+      <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
+    </button>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--lgreen);">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <!-- Left: KPI cards -->
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Breakdown</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
+            <div class="sc or"><div class="lb">Fleet — All Sites</div><div class="vl" id="live-fleet-ytd">39.84</div><div class="sb">tCO₂e · YTD</div></div>
+            <div class="sc rd"><div class="lb">Jubilee (100%)</div><div class="vl" id="live-jub-ghg" style="font-size:.95rem;">209,396</div><div class="sb" id="live-jub-ghg-sub">tCO₂e · YTD</div></div>
+            <div class="sc or"><div class="lb">TEN (100%)</div><div class="vl" id="live-ten-ghg" style="font-size:.95rem;">222,020</div><div class="sb" id="live-ten-ghg-sub">tCO₂e · YTD</div></div>
+            <div class="sc"><div class="lb">OCTP (100%)</div><div class="vl" id="live-octp-ghg" style="font-size:.95rem;">116,909</div><div class="sb" id="live-octp-ghg-sub">tCO₂e · YTD</div></div>
+          </div>
+          <div style="padding:.4rem .65rem;background:var(--lorange);border-radius:6px;font-size:.68rem;color:#92400E;">
+            <strong id="live-total-ghg">548,325</strong> tCO₂e upstream (100% field) <span id="live-total-ghg-sub"></span>
+          </div>
+          <div style="display:none;" id="live-s1-total"></div>
+        </div>
+        <!-- Right: Chart -->
+        <div class="card" style="margin:0;">
+          <div class="ct">Upstream GHG by Field — Jan–May 2026 (tCO₂e)</div>
+          <canvas id="ov-upstream-ghg"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCOPE 2 accordion -->
+  <div class="ov-accordion" id="acc-s2" style="margin-bottom:.5rem;">
+    <button onclick="toggleAccordion('acc-s2')" style="width:100%;display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;background:white;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;">
+      <div style="width:5px;height:22px;background:#2B7CB5;border-radius:3px;flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div style="font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#2B7CB5;">Scope 2 — Indirect Emissions</div>
+        <div style="font-size:.7rem;color:var(--mid);margin-top:.15rem;">Electricity — PH + Energy House Takoradi</div>
+      </div>
+      <div style="font-size:1.2rem;font-weight:800;color:#2B7CB5;" id="live-co2-ytd">76</div>
+      <div style="font-size:.65rem;color:var(--grey);margin-left:.25rem;margin-right:.5rem;">tCO₂e</div>
+      <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
+    </button>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:#EFF6FF;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Breakdown</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+            <div class="sc bl"><div class="lb">Consumption YTD</div><div class="vl" id="live-kwh-ytd">173,714</div><div class="sb" id="live-kwh-ytd-sub">kWh</div></div>
+            <div class="sc or"><div class="lb">Scope 2 Emissions</div><div class="vl" id="live-co2-ytd-disp">76</div><div class="sb" id="live-co2-ytd-sub">tCO₂e</div></div>
+            <div class="sc gd"><div class="lb">Energy Cost 2025</div><div class="vl" id="live-cost-2025" style="font-size:.95rem;">GH¢ 2.77M</div><div class="sb" id="live-cost-2025-sub">Full year</div></div>
+            <div class="sc bl"><div class="lb">Sites Tracked</div><div class="vl" style="font-size:.9rem;">PH + EH</div><div class="sb">Tema + Takoradi</div></div>
+          </div>
+        </div>
+        <div class="card" style="margin:0;">
+          <div class="ct">Annual Electricity — PH (kWh)</div>
+          <canvas id="ov-energy"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCOPE 3 accordion -->
+  <div class="ov-accordion" id="acc-s3" style="margin-bottom:.5rem;">
+    <button onclick="toggleAccordion('acc-s3')" style="width:100%;display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;background:white;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;">
+      <div style="width:5px;height:22px;background:#0D9488;border-radius:3px;flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div style="font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#0D9488;">Scope 3 — Value Chain Emissions</div>
+        <div style="font-size:.7rem;color:var(--mid);margin-top:.15rem;">Air travel across all GNPC directorates</div>
+      </div>
+      <div style="font-size:1.2rem;font-weight:800;color:#0D9488;" id="live-travel-ytd">178.81</div>
+      <div style="font-size:.65rem;color:var(--grey);margin-left:.25rem;margin-right:.5rem;">tCO₂e</div>
+      <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
+    </button>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:#F0FDFA;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Breakdown</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
+            <div class="sc" style="border:1px solid #0D9488;"><div class="lb">Air Travel</div><div class="vl" id="live-travel-s3">178.81</div><div class="sb">tCO₂e · All GNPC</div></div>
+            <div class="sc bl"><div class="lb">Methodology</div><div class="vl" style="font-size:.75rem;color:var(--mid);">DEFRA 2023 + RF</div><div class="sb">Radiative forcing included</div></div>
+          </div>
+          <div class="info" style="margin:0;font-size:.7rem;"><span>ℹ️</span><div>Business air travel across all GNPC directorates and sites. Generator fuel, supply chain &amp; commuting emissions are pending data collection.</div></div>
+        </div>
+        <div class="card" style="margin:0;">
+          <div class="ct">Air Travel Emissions by Month — 2026 (tCO₂e)</div>
+          <canvas id="ov-travel"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTHER ENVIRONMENTAL PARAMETERS accordion -->
+  <div class="ov-accordion" id="acc-other" style="margin-bottom:1rem;">
+    <button onclick="toggleAccordion('acc-other')" style="width:100%;display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;background:white;border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:left;">
+      <div style="width:5px;height:22px;background:var(--green);border-radius:3px;flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div style="font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--green);">Other Environmental Parameters</div>
+        <div style="font-size:.7rem;color:var(--mid);margin-top:.15rem;">Waste · Water · Produced Water · Food &amp; Packaging</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--green);font-weight:700;margin-right:.5rem;">4 indicators</div>
+      <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
+    </button>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--lgreen);">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.85rem;">
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Waste &amp; Water</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+            <div class="sc"><div class="lb">Plastic Waste YTD</div><div class="vl" id="live-plastic-ytd">278 kg</div><div class="sb" id="live-plastic-ytd-sub">Jan–Mar 2026</div></div>
+            <div class="sc bl"><div class="lb">Water Consumption</div><div class="vl" style="font-size:.95rem;" id="live-wt-total">2,079,000</div><div class="sb" id="live-wt-total-sub">Litres</div></div>
+            <div class="sc gd"><div class="lb">Produced Water</div><div class="vl" style="font-size:1rem;">✅ All</div><div class="sb">EPA 29 mg/L compliant</div></div>
+            <div class="sc"><div class="lb">Food &amp; Pkg Waste</div><div class="vl" style="font-size:.85rem;color:var(--grey);">Pending</div><div class="sb">Collection not started</div></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.65rem;">
+          <div class="card" style="margin:0;flex:1;">
+            <div class="ct">Plastic Waste — PH Monthly (kg)</div>
+            <canvas id="ov-plastic"></canvas>
+          </div>
+          <div class="card" style="margin:0;flex:1;">
+            <div class="ct">Water Consumption — PH 2025 (L)</div>
+            <canvas id="ov-water"></canvas>
+          </div>
+        </div>
+      </div>
+      <!-- KPI snapshot -->
+      <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;display:flex;align-items:center;gap:.75rem;">
+        KPI Snapshot
+        <span style="display:flex;align-items:center;gap:.65rem;font-weight:400;text-transform:none;letter-spacing:0;font-size:.62rem;">
+          <span style="display:flex;align-items:center;gap:.2rem;"><span style="width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block;"></span>On track</span>
+          <span style="display:flex;align-items:center;gap:.2rem;"><span style="width:7px;height:7px;border-radius:50%;background:#CBD5E0;display:inline-block;"></span>Pending</span>
+        </span>
+      </div>
+      <div class="kgrid" id="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Plastic Waste (PH)</div><div class="kv">↓ 2026 vs 2025</div></div></div>
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Jubilee Produced Water</div><div class="kv">Compliant all months 2026</div></div></div>
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">TEN Produced Water</div><div class="kv">Compliant all months 2026</div></div></div>
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Platform</div><div class="kv">Operational · Multi-user</div></div></div>
+        <div class="kpi kpi-grey" style="display:none;"><div class="kdot gr"></div><div><div class="kn">Food &amp; Pkg Waste</div><div class="kv">Collection not commenced</div></div></div>
+        <div class="kpi kpi-grey" style="display:none;"><div class="kdot gr"></div><div><div class="kn">PH Generators</div><div class="kv">Data pending</div></div></div>
+        <div class="kpi kpi-grey" style="display:none;"><div class="kdot gr"></div><div><div class="kn">OCTP Produced Water</div><div class="kv">Not currently tracked</div></div></div>
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Water (PH)</div><div class="kv">2,079,000 L · Jan–Jul 2025</div></div></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Charts moved into accordion sections -->
+</div>
+
+<!-- ENERGY -->
+<div class="page" id="page-energy">
+  <!-- Location sub-tabs -->
+  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
+    <button class="en-loc-btn active" data-loc="all"  onclick="switchEnergyLocation(this,'all')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 Summary</button>
+    <button class="en-loc-btn"        data-loc="ph"   onclick="switchEnergyLocation(this,'ph')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
+    <button class="en-loc-btn"        data-loc="ratc" onclick="switchEnergyLocation(this,'ratc')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
+    <button class="en-loc-btn"        data-loc="gtc"  onclick="switchEnergyLocation(this,'gtc')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
+    <button class="en-loc-btn"        data-loc="eh"   onclick="switchEnergyLocation(this,'eh')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
+  </div>
+
+  <!-- ALL SITES panel -->
+  <div id="en-all-panel">
+    <div class="info"><span>📊</span><div><strong>Electricity Summary — All Corporate Sites.</strong> Overview across all four GNPC facilities. Select a site tab above for detailed monthly data and charts.</div></div>
+    <div id="en-all-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="card" style="margin-bottom:1rem;"><div class="ct">Monthly Electricity Consumption by Site — kWh</div><canvas id="en-all-chart"></canvas></div>
+    <div class="card"><div class="ct">Site Summary</div>
+      <div class="tw"><table><thead><tr><th>Site</th><th>Period</th><th>Consumption (kWh)</th><th>Cost (GH¢)</th><th>Scope 2 (tCO₂e)</th><th>Data Status</th></tr></thead>
+      <tbody id="en-all-tbody"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- PH panel -->
+  <div id="en-ph-panel" style="display:none;">
+
+  <!-- Year selector -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-bottom:.9rem;">
+    <div style="display:flex;align-items:center;gap:.6rem;">
+      <span style="font-size:.65rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;">Year:</span>
+      <div style="display:flex;gap:.35rem;">
+        <button class="ph-en-yr-btn" data-yr="2026" onclick="setPHEnergyYear(2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:.73rem;font-weight:700;cursor:pointer;">2026</button>
+        <button class="ph-en-yr-btn" data-yr="2025" onclick="setPHEnergyYear(2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2025</button>
+        <button class="ph-en-yr-btn" data-yr="2024" onclick="setPHEnergyYear(2024,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2024</button>
+        <button class="ph-en-yr-btn" data-yr="2023" onclick="setPHEnergyYear(2023,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2023</button>
+        <button class="ph-en-yr-btn" data-yr="2022" onclick="setPHEnergyYear(2022,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2022</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic KPI cards -->
+  <div id="ph-en-kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+
+  <!-- 2025 data note (shown only for 2025) -->
+  <div id="ph-en-2025-note" class="alert" style="display:none;"><span>⚠️</span><div><strong>Data Integrity Note — 2025:</strong> January 2025 shows 203,791 kWh — nearly triple the monthly average, likely a catch-up billing period. February 2025 has no data. The annual total covers 11 months. Treat with caution in year-on-year comparisons.</div></div>
+
+  <!-- Scope 2 divider -->
+  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
+    <div style="width:4px;height:20px;background:#2B7CB5;border-radius:2px;"></div>
+    <div id="ph-en-scope2-label" style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#2B7CB5;">Scope 2 — Indirect Emissions from Electricity</div>
+    <div style="flex:1;height:1px;background:var(--border);"></div>
+  </div>
+
+  <!-- Live IDs preserved for updateLiveStatCards -->
+  <span id="live-en-ytd" style="display:none;">173,714</span>
+  <span id="live-en-ytd-sub" style="display:none;">kWh · Jan–Feb 2026</span>
+  <span id="live-co2-ytd-en" style="display:none;">76</span>
+  <span id="live-co2-2025-en" style="display:none;">449</span>
+  <span id="live-cost-2025-en" style="display:none;">GH¢ 2.77M</span>
+  <span id="live-cost-2025-en-sub" style="display:none;"></span>
+  <span id="live-en-yoy" style="display:none;"></span>
+  <div class="card full" style="margin-bottom:1rem;">
+    <div class="ct">Monthly Electricity Consumption (kWh) — 2022–2026</div>
+    <div class="leg">
+      <div class="li"><div class="ld" style="background:#A0AEC0"></div>2022</div>
+      <div class="li"><div class="ld" style="background:#2B7CB5"></div>2023</div>
+      <div class="li"><div class="ld" style="background:#1A6B3E"></div>2024</div>
+      <div class="li"><div class="ld" style="background:#C59332"></div>2025</div>
+      <div class="li"><div class="ld" style="background:#E53E3E"></div>2026</div>
+    </div>
+    <canvas id="en-monthly" style="height:180px !important;max-height:180px !important;"></canvas>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">Annual Consumption (kWh)</div><canvas id="en-annual"></canvas></div>
+    <div class="card"><div class="ct">Energy Cost Trend (GH¢)</div><canvas id="en-cost"></canvas></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">Tariff Trend 2025 (GH¢/kWh)</div><canvas id="en-tariff"></canvas></div>
+    <div class="card"><div class="ct">Scope 2 Emissions Annual (tCO₂e)</div><canvas id="en-emissions"></canvas></div>
+  </div>
+  <div class="sl" style="display:flex;justify-content:space-between;align-items:center;">
+    <span>Monthly Energy Data</span>
+    <button class="hbtn gold" onclick="exportModuleData('energy')" style="font-size:.7rem;padding:.3rem .6rem;">⬇ Export Electricity to Excel</button>
+  </div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Year</th><th>Month</th><th>Consumption (kWh)</th><th>Cost (GH¢)</th><th>Tariff (GH¢/kWh)</th><th>tCO₂e</th><th>Note</th></tr></thead><tbody id="en-tbody"></tbody></table></div></div>
+  </div><!-- /en-ph-panel -->
+
+  <!-- Energy House panel -->
+  <div id="en-eh-panel" style="display:none;">
+
+    <!-- Year selector -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem;margin-bottom:.9rem;">
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <span style="font-size:.65rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;">Year:</span>
+        <div style="display:flex;gap:.35rem;">
+          <button class="eh-yr-btn" data-yr="2026" onclick="setEHYear(2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:.73rem;font-weight:700;cursor:pointer;">2026</button>
+          <button class="eh-yr-btn" data-yr="2025" onclick="setEHYear(2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2025</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI cards -->
+    <div id="eh-kpi-row" class="sr s4" style="margin-bottom:1rem;"></div>
+
+    <!-- Info note -->
+    <div class="info"><span>🏭</span><div><strong>Energy House — Takoradi.</strong> GNPC office in Takoradi. Data from ECG (Electricity Company of Ghana) billing records. Scope 2 emissions calculated using the same 0.00044 tCO₂e/kWh factor as Petroleum House.</div></div>
+
+    <!-- Charts -->
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="card"><div class="ct" id="eh-monthly-ct">Monthly Consumption (kWh) — 2026</div><canvas id="eh-monthly"></canvas></div>
+      <div class="card"><div class="ct" id="eh-cost-ct">Monthly Bill (GH¢) — 2026</div><canvas id="eh-cost"></canvas></div>
+    </div>
+
+    <!-- Monthly table -->
+    <div class="card">
+      <div class="ct" id="eh-table-ct">Energy House — Monthly Electricity Data 2026</div>
+      <div class="tw"><table>
+        <thead><tr><th>Month</th><th>Previous Reading (kWh)</th><th>Current Reading (kWh)</th><th>Consumption (kWh)</th><th>Bill (GH¢)</th><th>Scope 2 (tCO₂e)</th></tr></thead>
+        <tbody id="eh-tbody"></tbody>
+      </table></div>
+    </div>
+
+  </div><!-- /en-eh-panel -->
+
+  <!-- RATC panel -->
+  <div id="en-ratc-panel" style="display:none;">
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;">
+      <span style="font-size:.65rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;">Year:</span>
+      <button class="ratc-yr-btn" data-yr="2026" onclick="setSiteEnergyYear('ratc',2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:.73rem;font-weight:700;cursor:pointer;">2026</button>
+      <button class="ratc-yr-btn" data-yr="2025" onclick="setSiteEnergyYear('ratc',2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2025</button>
+    </div>
+    <div id="ratc-en-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="info"><span>🔬</span><div><strong>Research &amp; Technology Centre — Electricity.</strong> Framework ready — use + Add Data to log ECG bills when available.</div></div>
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="card"><div class="ct" id="ratc-en-ct">Monthly Consumption (kWh) — 2026</div><canvas id="ratc-en-chart"></canvas></div>
+      <div class="card"><div class="ct" id="ratc-cost-ct">Monthly Bill (GH¢) — 2026</div><canvas id="ratc-cost-chart"></canvas></div>
+    </div>
+    <div class="card"><div class="ct" id="ratc-en-table-ct">RATC — Electricity 2026</div>
+      <div class="tw"><table><thead><tr><th>Month</th><th>Consumption (kWh)</th><th>Bill (GH¢)</th><th>Scope 2 (tCO₂e)</th><th>Status</th></tr></thead>
+      <tbody id="ratc-en-tbody"></tbody></table></div>
+    </div>
+  </div><!-- /en-ratc-panel -->
+
+  <!-- GTC panel -->
+  <div id="en-gtc-panel" style="display:none;">
+    <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;">
+      <span style="font-size:.65rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;">Year:</span>
+      <button class="gtc-yr-btn" data-yr="2026" onclick="setSiteEnergyYear('gtc',2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--green);background:var(--green);color:white;font-size:.73rem;font-weight:700;cursor:pointer;">2026</button>
+      <button class="gtc-yr-btn" data-yr="2025" onclick="setSiteEnergyYear('gtc',2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--mid);font-size:.73rem;font-weight:600;cursor:pointer;">2025</button>
+    </div>
+    <div id="gtc-en-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
+    <div class="info"><span>🎓</span><div><strong>GNPC Training Centre — Electricity.</strong> Framework ready — use + Add Data to log ECG bills when available.</div></div>
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="card"><div class="ct" id="gtc-en-ct">Monthly Consumption (kWh) — 2026</div><canvas id="gtc-en-chart"></canvas></div>
+      <div class="card"><div class="ct" id="gtc-cost-ct">Monthly Bill (GH¢) — 2026</div><canvas id="gtc-cost-chart"></canvas></div>
+    </div>
+    <div class="card"><div class="ct" id="gtc-en-table-ct">GTC — Electricity 2026</div>
+      <div class="tw"><table><thead><tr><th>Month</th><th>Consumption (kWh)</th><th>Bill (GH¢)</th><th>Scope 2 (tCO₂e)</th><th>Status</th></tr></thead>
+      <tbody id="gtc-en-tbody"></tbody></table></div>
+    </div>
+  </div><!-- /en-gtc-panel -->
 
 </div>
-  </div><!-- /wt-ph-panel -->
+
+<!-- WASTE -->
+<div class="page" id="page-waste">
+
+  <!-- Site tabs -->
+  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
+    <button class="wa-site-btn active" data-site="summary" onclick="switchWasteSite(this,'summary')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 Summary</button>
+    <button class="wa-site-btn"        data-site="ph"      onclick="switchWasteSite(this,'ph')"      style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
+    <button class="wa-site-btn"        data-site="ratc"    onclick="switchWasteSite(this,'ratc')"    style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
+    <button class="wa-site-btn"        data-site="gtc"     onclick="switchWasteSite(this,'gtc')"     style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
+    <button class="wa-site-btn"        data-site="eh"      onclick="switchWasteSite(this,'eh')"      style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏭 Energy House</button>
+  </div>
 
   <!-- RATC Water -->
   <div id="wt-ratc-panel" style="display:none;">
@@ -901,362 +1500,6 @@
     <div class="pending"><span>💧</span><div><h4>Energy House Water Data — Pending Collection</h4><p>No water data recorded for Energy House yet. Use + Add Water Data to begin logging when bills are available.</p></div></div>
   </div>
 
-
-<!-- TRAVEL -->
-<div class="page" id="page-travel">
-  <div class="info"><span>✈️</span><div><strong>Travel &amp; Vehicle Emissions — GNPC Corporate.</strong> Scope 1 from PH fleet fuel consumption · Scope 3 from business air travel across <strong>all GNPC directorates</strong>.</div></div>
-
-  <!-- Scope 1 — Fleet -->
-  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
-    <div style="width:4px;height:20px;background:#D97706;border-radius:2px;"></div>
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#D97706;">Scope 1 — Direct Emissions (Fleet)</div>
-    <div style="flex:1;height:1px;background:var(--border);"></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.2rem;">
-    <div style="background:var(--lorange);border:1.5px solid var(--orange);border-radius:12px;padding:1rem 1.1rem;">
-      <div style="font-size:.62rem;color:var(--mid);font-weight:600;margin-bottom:.2rem;" id="tr-fleet-label">Fleet — Jan–Apr 2026</div>
-      <div style="font-size:2rem;font-weight:800;color:var(--orange);" id="tr-fleet-co2e">39.84</div>
-      <div style="font-size:.68rem;color:var(--grey);" id="tr-fleet-sub">tCO₂e · Diesel vehicles</div>
-    </div>
-    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;">
-      <div style="font-size:.62rem;color:var(--mid);font-weight:600;margin-bottom:.3rem;">Scope 1 note</div>
-      <div style="font-size:.73rem;color:var(--mid);line-height:1.6;">Fleet vehicles only. Generator (diesel) emissions are <strong>pending data collection</strong> and will be added to Scope 1 totals when available.</div>
-    </div>
-  </div>
-
-  <!-- Scope 3 — Air Travel -->
-  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
-    <div style="width:4px;height:20px;background:#0D9488;border-radius:2px;"></div>
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#0D9488;">Scope 3 — Value Chain Emissions (Air Travel)</div>
-    <div style="flex:1;height:1px;background:var(--border);"></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.2rem;">
-    <div style="background:#F0FDFA;border:1.5px solid #0D9488;border-radius:12px;padding:1rem 1.1rem;">
-      <div style="font-size:.62rem;color:var(--mid);font-weight:600;margin-bottom:.2rem;" id="tr-air-label">Air Travel — All GNPC · Jan–Apr 2026</div>
-      <div style="font-size:2rem;font-weight:800;color:#0D9488;" id="tr-air-co2e">178.81</div>
-      <div style="font-size:.68rem;color:var(--grey);" id="tr-air-sub">tCO₂e · 49 travellers</div>
-    </div>
-    <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;">
-      <div style="font-size:.62rem;color:var(--mid);font-weight:600;margin-bottom:.2rem;">Business Class Share</div>
-      <div style="font-size:2rem;font-weight:800;color:#0D9488;">90.8%</div>
-      <div style="font-size:.68rem;color:var(--grey);">of total air travel emissions</div>
-    </div>
-  </div>
-
-  <div class="sl">Monthly Fleet Summary — Scope 1</div>
-  <div class="card" style="margin-bottom:1rem;">
-    <div class="ct">GNPC Fleet Performance — Jan–Apr 2026 (18 vehicles, diesel)</div>
-    <div class="tw"><table><thead><tr><th>Month</th><th>Vehicles Active</th><th>Total Mileage (km)</th><th>Fuel Consumed (L)</th><th>Fleet tCO₂e</th><th>Status</th></tr></thead>
-    <tbody id="fuel-tbody">
-      <tr><td>January 2026</td><td class="num">14</td><td class="num">15,258</td><td class="num">3,597.22</td><td class="num"><strong>9.42</strong></td><td><span class="cbadge cwarn">⚠️ Exceeds target</span></td></tr>
-      <tr><td>February 2026</td><td class="num">13</td><td class="num">24,335</td><td class="num">4,797.23</td><td class="num"><strong>12.50</strong></td><td><span class="cbadge cwarn">⚠️ Exceeds target</span></td></tr>
-      <tr><td>March 2026</td><td class="num">12</td><td class="num">21,834</td><td class="num">2,636.78</td><td class="num"><strong>6.92</strong></td><td><span class="cbadge cwarn">⚠️ Exceeds target</span></td></tr>
-      <tr><td>April 2026</td><td class="num">12</td><td class="num">26,817</td><td class="num">4,121.00</td><td class="num"><strong>11.00</strong></td><td><span class="cbadge cwarn">⚠️ Exceeds target</span></td></tr>
-      <tr style="background:var(--lgold);font-weight:700;"><td>Q1–Apr Total</td><td class="num">—</td><td class="num">88,244</td><td class="num">15,152.23</td><td class="num"><strong>39.84</strong></td><td>—</td></tr>
-    </tbody></table></div>
-  </div>
-
-  <div class="sl">Air Travel Summary — Scope 3</div>
-  <div class="card" style="margin-bottom:1rem;">
-    <div class="ct">Business Air Travel — Jan–Apr 2026</div>
-    <div class="tw"><table><thead><tr><th>Period</th><th>Travellers</th><th>Economy tCO₂e</th><th>Business tCO₂e</th><th>Total tCO₂e</th><th>Key Routes</th></tr></thead>
-    <tbody>
-      <tr><td>January–February 2026</td><td class="num">17</td><td class="num">2.70</td><td class="num">43.60</td><td class="num"><strong>46.30</strong></td><td style="font-size:.7rem;color:var(--grey);">Accra–London (×15), Accra–Lome (×2)</td></tr>
-      <tr><td>March–April 2026</td><td class="num">32</td><td class="num">13.75</td><td class="num">118.77</td><td class="num"><strong>132.51</strong></td><td style="font-size:.7rem;color:var(--grey);">Accra–London–Houston, Accra–Amsterdam</td></tr>
-      <tr style="background:var(--lgold);font-weight:700;"><td>Total Jan–Apr</td><td class="num">49</td><td class="num">16.45</td><td class="num">162.37</td><td class="num"><strong>178.81</strong></td><td style="font-size:.7rem;">Business class = 90.8% of total</td></tr>
-    </tbody></table></div>
-  </div>
-
-  <div class="g2">
-    <div class="card">
-      <div class="ct">Emission Factors Used</div>
-      <div class="tw"><table><thead><tr><th>Source</th><th>Fuel / Mode</th><th>Factor</th><th>Unit</th></tr></thead>
-      <tbody>
-        <tr><td>🚗 Company Vehicles</td><td>Petrol</td><td>2.30</td><td>kg CO₂e / litre</td></tr>
-        <tr><td>🚗 Company Vehicles</td><td>Diesel</td><td>2.65</td><td>kg CO₂e / litre</td></tr>
-        <tr><td>⚙️ Generator</td><td>Diesel</td><td>2.65</td><td>kg CO₂e / litre</td></tr>
-        <tr><td>✈️ Air Travel</td><td>Economy</td><td>0.109</td><td>kg CO₂e / km / pax</td></tr>
-        <tr><td>✈️ Air Travel</td><td>Business</td><td>0.316</td><td>kg CO₂e / km / pax</td></tr>
-      </tbody></table></div>
-      <div style="margin-top:.9rem;"><button class="hbtn gold" onclick="openEntry('travel')">+ Add Travel / Fuel Data</button></div>
-    </div>
-    <div class="card">
-      <div class="ct">Data Sources &amp; Methodology</div>
-      <div style="font-size:.75rem;color:var(--mid);line-height:1.8;">
-        <div style="margin-bottom:.5rem;"><strong style="color:var(--slate);">Fleet (Scope 1)</strong><br>Factors: GNPC internal · Petrol 2.30 kg CO₂e/L, Diesel 2.65 kg CO₂e/L · Based on fuel receipts and vehicle logbooks.</div>
-        <div style="margin-bottom:.5rem;"><strong style="color:var(--slate);">Air Travel (Scope 3)</strong><br>Factors: DEFRA 2023 with Radiative Forcing uplift · Economy 0.109, Business 0.316 kg CO₂e/km/pax · Distance from Google Flights great-circle calculation.</div>
-        <div><strong style="color:var(--slate);">Generators (Scope 1)</strong><br>Factor: 2.65 kg CO₂e/L (diesel) · Data collection pending — to be added to Scope 1 total when available.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CARBON CREDITS & OFFSETS -->
-<div class="page" id="page-carbon">
-
-  <!-- Header -->
-  <div style="background:linear-gradient(135deg,#064E3B 0%,#065F46 50%,#047857 100%);border-radius:12px;padding:1.4rem 1.6rem;margin-bottom:1rem;">
-    <div style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:.2rem;">GNPC · Environment Department</div>
-    <div style="font-size:1.2rem;font-weight:800;color:white;margin-bottom:.2rem;">Carbon Credits &amp; Offsets Registry</div>
-    <div style="font-size:.72rem;color:rgba(255,255,255,.6);">Framework for tracking earned credits, purchased offsets, and net carbon position · Standards TBD</div>
-    <div style="margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
-      <button onclick="openCarbonEntry('earned')" style="padding:.35rem .9rem;background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);border-radius:6px;font-size:.74rem;font-weight:600;cursor:pointer;">+ Log Earned Credit</button>
-      <button onclick="openCarbonEntry('purchased')" style="padding:.35rem .9rem;background:var(--gold);color:white;border:none;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer;">+ Log Purchased Offset</button>
-      <button onclick="downloadTabPDF({tabId:'carbon',title:'Carbon Credits & Offsets Registry',filename:'GNPC_Carbon_Credits_'+new Date().toISOString().split('T')[0]+'.pdf'})" style="padding:.35rem .9rem;background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.25);border-radius:6px;font-size:.74rem;font-weight:600;cursor:pointer;">⬇ Export PDF</button>
-    </div>
-  </div>
-
-  <!-- Net Position Summary -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem;" id="carbon-kpi-grid">
-    <div class="sc" style="border:2px solid #047857;">
-      <div class="lb" style="color:#047857;font-weight:800;">Credits Earned</div>
-      <div class="vl" id="cc-earned" style="color:#047857;">0</div>
-      <div class="sb">tCO₂e · Verified credits</div>
-    </div>
-    <div class="sc gd" style="border:2px solid var(--gold);">
-      <div class="lb" style="color:var(--gold);font-weight:800;">Offsets Purchased</div>
-      <div class="vl" id="cc-purchased" style="color:var(--gold);">0</div>
-      <div class="sb">tCO₂e · Retired offsets</div>
-    </div>
-    <div class="sc bl">
-      <div class="lb">Total Offset Available</div>
-      <div class="vl" id="cc-total">0</div>
-      <div class="sb">tCO₂e · Earned + Purchased</div>
-    </div>
-    <div class="sc or">
-      <div class="lb">Net Emissions Position</div>
-      <div class="vl" id="cc-net" style="font-size:1rem;">Calculating…</div>
-      <div class="sb">Total S1+S2+S3 minus offsets</div>
-    </div>
-  </div>
-
-  <!-- Potential credits pipeline -->
-  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
-    <div style="width:4px;height:20px;background:#047857;border-radius:2px;"></div>
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#047857;">Credits GNPC Can Earn — Activity Pipeline</div>
-    <div style="flex:1;height:1px;background:var(--border);"></div>
-    <span style="font-size:.65rem;color:var(--grey);">Indicative — pending formal MRV &amp; verification</span>
-  </div>
-
-  <div id="carbon-potential-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.2rem;"></div>
-
-  <!-- Standards reference -->
-  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
-    <div style="width:4px;height:20px;background:var(--blue);border-radius:2px;"></div>
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--blue);">Carbon Standards Reference</div>
-    <div style="flex:1;height:1px;background:var(--border);"></div>
-  </div>
-  <div class="card" style="margin-bottom:1.2rem;">
-    <div class="tw"><table>
-      <thead><tr><th>Standard</th><th>Relevant Methodology</th><th>Applicable GNPC Activity</th><th>Min. Volume</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td><strong>VERRA (VCS)</strong></td><td>VM0009 — Avoided Emissions from Flare</td><td>Upstream flare reduction (Jubilee, TEN, OCTP)</td><td>~1,000 tCO₂e/yr</td><td><span class="cbadge cwarn">⚠️ Assess</span></td></tr>
-        <tr><td><strong>Gold Standard</strong></td><td>Waste — Solid Waste Diversion</td><td>Plastic &amp; food waste diversion from landfill</td><td>~500 tCO₂e/yr</td><td><span class="cbadge bgr">🔄 Low volume</span></td></tr>
-        <tr><td><strong>Gold Standard</strong></td><td>Energy Efficiency — Buildings</td><td>PH electricity reduction vs. baseline</td><td>~100 tCO₂e/yr</td><td><span class="cbadge cwarn">⚠️ Assess</span></td></tr>
-        <tr><td><strong>Ghana REDD+</strong></td><td>National REDD+ Framework</td><td>Any forestry/land-use offsets</td><td>TBD</td><td><span class="cbadge bgr">🔄 TBD</span></td></tr>
-        <tr><td><strong>CDM / Paris</strong></td><td>Article 6.4 Mechanism</td><td>Cross-border offset purchases</td><td>No min.</td><td><span class="cbadge bgr">🔄 TBD</span></td></tr>
-      </tbody>
-    </table></div>
-    <div style="margin-top:.65rem;font-size:.7rem;color:var(--grey);line-height:1.6;">
-      ⚠️ Carbon standard selection should be confirmed with the Environment Department and any appointed carbon advisory firm. Volumes and eligibility require formal Measurement, Reporting and Verification (MRV) before credits can be issued.
-    </div>
-  </div>
-
-  <!-- Divider: Earned credits registry -->
-  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
-    <div style="width:4px;height:20px;background:#047857;border-radius:2px;"></div>
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#047857;">Earned Credits Log</div>
-    <div style="flex:1;height:1px;background:var(--border);"></div>
-  </div>
-  <div class="card" style="margin-bottom:1.2rem;">
-    <div class="tw"><table>
-      <thead><tr><th>ID</th><th>Activity</th><th>Category</th><th>tCO₂e</th><th>Standard</th><th>Vintage</th><th>Status</th><th>Date</th><th>Notes</th></tr></thead>
-      <tbody id="cc-earned-tbody">
-        <tr><td colspan="9" style="text-align:center;color:var(--grey);font-style:italic;padding:1.2rem;">No earned credits logged yet. Use "+ Log Earned Credit" when credits are verified.</td></tr>
-      </tbody>
-    </table></div>
-  </div>
-
-  <!-- Divider: Purchased offsets registry -->
-  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
-    <div style="width:4px;height:20px;background:var(--gold);border-radius:2px;"></div>
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--gold);">Purchased Offsets Log</div>
-    <div style="flex:1;height:1px;background:var(--border);"></div>
-  </div>
-  <div class="card" style="margin-bottom:1.2rem;">
-    <div class="tw"><table>
-      <thead><tr><th>ID</th><th>Project / Provider</th><th>Category</th><th>tCO₂e</th><th>Standard</th><th>Vintage</th><th>Cost (GH¢)</th><th>Status</th><th>Notes</th></tr></thead>
-      <tbody id="cc-purchased-tbody">
-        <tr><td colspan="9" style="text-align:center;color:var(--grey);font-style:italic;padding:1.2rem;">No offsets purchased yet. Use "+ Log Purchased Offset" to record offset purchases.</td></tr>
-      </tbody>
-    </table></div>
-  </div>
-
-  <!-- Next steps guidance -->
-  <div style="margin-bottom:.45rem;display:flex;align-items:center;gap:.6rem;">
-    <div style="width:4px;height:20px;background:var(--mid);border-radius:2px;"></div>
-    <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--mid);">Recommended Next Steps</div>
-    <div style="flex:1;height:1px;background:var(--border);"></div>
-  </div>
-  <div class="card" style="margin-bottom:1rem;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.76rem;color:var(--slate);line-height:1.7;">
-      <div>
-        <div style="font-weight:700;color:var(--green);margin-bottom:.4rem;">🎯 Short Term (0–6 months)</div>
-        <ol style="margin:0;padding-left:1.1rem;">
-          <li>Appoint a carbon advisory firm or use EPA Ghana guidance to assess flare reduction credit potential</li>
-          <li>Establish baseline flare volumes for Jubilee, TEN and OCTP against which reductions are measured</li>
-          <li>Quantify Jan–May 2026 plastic waste diversion tonnage and assess feasibility under Gold Standard aggregated programme</li>
-          <li>Select and register with a preferred carbon standard (VERRA or Gold Standard recommended)</li>
-        </ol>
-      </div>
-      <div>
-        <div style="font-weight:700;color:var(--gold);margin-bottom:.4rem;">📋 Medium Term (6–18 months)</div>
-        <ol style="margin:0;padding-left:1.1rem;">
-          <li>Commission formal MRV (Measurement, Reporting &amp; Verification) plan for eligible activities</li>
-          <li>Submit Project Design Document (PDD) to chosen standard body</li>
-          <li>Consider purchasing verified offsets to neutralise air travel Scope 3 emissions while own credits are developed</li>
-          <li>Explore Ghana's emerging domestic carbon market under the Paris Agreement Article 6 framework</li>
-        </ol>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- VEHICLE REGISTRY -->
-<div class="page" id="page-vehicles">
-
-  <div style="background:linear-gradient(135deg,#1a3a2a 0%,var(--green) 100%);border-radius:12px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
-    <div>
-      <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin-bottom:.2rem;">GNPC Fleet · Petroleum House</div>
-      <div style="font-size:1.05rem;font-weight:800;color:white;">Vehicle Registry — Scope 1 Emissions</div>
-      <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-top:.15rem;">21 vehicles · Emissions data: Jan–Apr 2026 · Mileage figures are cumulative odometer readings, not period-specific</div>
-    </div>
-    <button onclick="exportTabAsPDF()" class="hbtn gold" style="align-self:center;">⬇ Export PDF</button>
-  </div>
-
-  <!-- KPI cards — populated by JS -->
-  <div id="fleet-kpi-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:1rem;"></div>
-
-  <!-- Filter bar -->
-  <div class="card" style="margin-bottom:.85rem;padding:.7rem 1rem;">
-    <div style="display:flex;gap:.65rem;flex-wrap:wrap;align-items:flex-end;">
-      <div class="fg">
-        <label>Fuel Type</label>
-        <select id="veh-filter-fuel" onchange="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;">
-          <option value="all">All</option>
-          <option value="Diesel">Diesel</option>
-          <option value="Petrol">Petrol</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Vehicle Type</label>
-        <select id="veh-filter-type" onchange="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;">
-          <option value="all">All Types</option>
-          <option value="Bus">Bus</option>
-          <option value="SUV">SUV</option>
-          <option value="Pick-Up">Pick-Up</option>
-          <option value="Mini-van">Mini-van</option>
-          <option value="Sedan">Sedan</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Sort By</label>
-        <select id="veh-sort" onchange="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;">
-          <option value="co2e">Highest Emissions</option>
-          <option value="km">Highest Mileage</option>
-          <option value="litres">Most Fuel</option>
-          <option value="reg">Registration</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Search</label>
-        <input type="text" id="veh-search" placeholder="Reg no., type…" oninput="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;width:140px;">
-      </div>
-    </div>
-  </div>
-
-  <!-- Vehicle table -->
-  <div class="card" style="margin-bottom:1rem;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;">
-      <div class="ct" style="margin:0;border:none;padding:0;">Individual Vehicle Emissions — Jan–Apr 2026</div>
-      <span id="veh-count" style="font-size:.68rem;color:var(--grey);"></span>
-    </div>
-    <div class="tw" style="overflow-x:auto;">
-      <table id="veh-table" style="min-width:700px;">
-        <thead><tr>
-          <th>Reg No.</th><th>Fuel</th><th>Type</th><th>Model Year</th>
-          <th>Mileage (km) ⚠️</th><th>Fuel (L)</th><th>tCO₂e</th><th>% Fleet</th><th>Band</th>
-        </tr></thead>
-        <tbody id="veh-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-  <div style="font-size:.7rem;color:var(--grey);margin:-0.5rem 0 1rem;padding:.4rem .75rem;background:var(--lgreen);border-radius:0 0 8px 8px;border:1px solid var(--border);border-top:none;">
-    ⚠️ <strong>Mileage note:</strong> Figures in the mileage column are cumulative odometer readings from vehicle logbooks, not distance driven during Jan–Apr 2026 only.
-    Fuel and emissions figures (tCO₂e) represent Jan–Apr 2026 actual consumption only.
-  </div>
-
-  <!-- Charts -->
-  <div class="g2" style="margin-bottom:1rem;">
-    <div class="card"><div class="ct">tCO₂e by Vehicle Type</div><canvas id="veh-by-type"></canvas></div>
-    <div class="card"><div class="ct">Emissions Distribution — Top 10 Vehicles</div><canvas id="veh-top10"></canvas></div>
-  </div>
-
-</div>
-
-<!-- DATA CENTRE -->
-<div class="page" id="page-datacentre">
-
-  <!-- Header -->
-  <div style="background:linear-gradient(135deg,var(--dgreen) 0%,var(--green) 100%);border-radius:12px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
-    <div>
-      <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:.2rem;">GNPC · Environment Department</div>
-      <div style="font-size:1.05rem;font-weight:800;color:white;">Data Centre</div>
-      <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-top:.15rem;">Data status · Entry log · Search — all in one place</div>
-    </div>
-  </div>
-
-  <!-- Sub-tabs -->
-  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;">
-    <button class="dc-tab-btn active" data-tab="dc-status" onclick="switchDCTab(this,'dc-status')" style="padding:.45rem 1rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.76rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📋 Data Status</button>
-    <button class="dc-tab-btn" data-tab="dc-log"    onclick="switchDCTab(this,'dc-log')"    style="padding:.45rem 1rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.76rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">📝 Data Log</button>
-    <button class="dc-tab-btn" data-tab="dc-search" onclick="switchDCTab(this,'dc-search')" style="padding:.45rem 1rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.76rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔍 Search</button>
-  </div>
-
-  <!-- Data Status panel -->
-  <div id="dc-status" class="dc-panel">
-    <div id="dc-status-content"></div>
-  </div>
-
-  <!-- Data Log panel -->
-  <div id="dc-log" class="dc-panel" style="display:none;">
-    <div class="info" style="margin-bottom:1rem;"><span>ℹ️</span><div>This log shows entries saved through the + Add Data form. Pre-loaded baseline data is built into the dashboard and does not appear here.</div></div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;">
-        <div class="ct" style="margin:0;border:none;padding:0;">Data Entry Log — Supabase</div>
-        <button class="hbtn" onclick="renderDataLog()" style="font-size:.7rem;padding:.3rem .6rem;">🔄 Refresh</button>
-      </div>
-      <div class="tw"><table><thead><tr><th>Date &amp; Time</th><th>Entered By</th><th>Data Stream</th><th>Period</th><th>Details</th></tr></thead><tbody id="datalog-tbody"></tbody></table></div>
-    </div>
-  </div>
-
-  <!-- Search panel -->
-  <div id="dc-search" class="dc-panel" style="display:none;">
-    <div id="dc-search-content"></div>
-  </div>
-
-</div>
-
-<!-- DATA STATUS -->
-<div class="page" id="page-status">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
-    <div class="sl" style="margin:0;flex:1;">Data Status — Corporate Sites</div>
-    <span style="font-size:.68rem;color:var(--grey);">Last synced: <span id="status-last-sync">Not yet synced</span> &nbsp;<button id="status-refresh-btn" onclick="refreshDataStatus()" style="background:none;border:1px solid var(--border);border-radius:4px;padding:.15rem .5rem;font-size:.65rem;color:var(--mid);cursor:pointer;">↻ Refresh</button></span>
-  </div>
-  <div style="font-size:.7rem;color:var(--mid);margin-bottom:.85rem;">Key: <span style="background:#DCFCE7;color:#15803D;padding:.1rem .38rem;border-radius:4px;font-weight:700;">✅</span> Current &nbsp;<span style="background:#FEF9C3;color:#A16207;padding:.1rem .38rem;border-radius:4px;font-weight:700;">⚠️</span> Anomaly &nbsp;<span style="background:#FEE2E2;color:#B91C1C;padding:.1rem .38rem;border-radius:4px;font-weight:700;">❌</span> Missing &nbsp;<span style="background:#F0FDFA;color:#0D9488;padding:.1rem .38rem;border-radius:4px;font-weight:700;">🔄</span> Pending</div>
-  <div class="card" style="margin-bottom:1rem;overflow-x:auto;"><div class="ct">2026 Data Status</div><table style="font-size:.7rem;"><thead id="status-thead"></thead><tbody id="status-tbody"></tbody></table></div>
-  <div class="card" style="overflow-x:auto;"><div class="ct">2025 Data Status</div><table style="font-size:.7rem;"><thead id="status-thead-2025"></thead><tbody id="status-tbody-2025"></tbody></table></div>
 </div>
 
 <!-- UPSTREAM OVERVIEW -->
@@ -3680,10 +3923,21 @@ function renderVehicleRegistry() {
   const sortBy = document.getElementById("veh-sort")?.value        || "co2e";
   const kw     = (document.getElementById("veh-search")?.value     || "").toLowerCase();
 
-  const reg = window.vehicleRegistry || [];
-  const totalCO2 = reg.reduce((s,v)=>s+v.co2e,0);
+  const site = window._fleetSite || "all";
+  const allReg = window.vehicleRegistry || [];
+  // Filter by home_base site
+  const reg = site === "all" ? allReg : allReg.filter(v => (v.home_base || "ph") === site);
+  const totalCO2 = allReg.reduce((s,v)=>s+v.co2e,0);
 
-  // Filter
+  // Show message if no vehicles for this site
+  if (reg.length === 0 && site !== "all") {
+    const kg = document.getElementById("fleet-kpi-grid");
+    if (kg) kg.innerHTML = '<div class="sc" style="grid-column:span 5;text-align:center;color:var(--grey);font-style:italic;padding:1.2rem;">No dedicated vehicles registered for this site. Vehicles are based at Petroleum House and may be deployed here as needed.</div>';
+    const tb = document.getElementById("veh-tbody"); if (tb) tb.innerHTML = "";
+    return;
+  }
+
+  // Filter by fuel/type/search
   let filtered = reg.filter(v => {
     if (fuel !== "all" && v.fuel !== fuel) return false;
     if (type !== "all" && v.type !== type) return false;
@@ -4874,6 +5128,20 @@ function buildOverview() {
     [{ label:"tCO₂e", data:travelByMo, backgroundColor:"#0D9488", borderRadius:4 }],
     { plugins:{ legend:{ display:false } } });
 
+  // Water consumption chart — Other accordion
+  var wd2025 = window.waterData && window.waterData[2025];
+  if (wd2025 && wd2025.litres) {
+    var wtData = Array(12).fill(null);
+    var wtMonths = wd2025.months || [];
+    wtMonths.forEach(function(m, i) {
+      var mi = MFULL.indexOf(m);
+      if (mi >= 0) wtData[mi] = wd2025.litres[i];
+    });
+    mkChart("ov-water", "bar", MONTHS,
+      [{ label:"Litres", data:wtData, backgroundColor:"#2B7CB5", borderRadius:4 }],
+      { plugins:{ legend:{ display:false } } });
+  }
+
   mkChart("ov-flare", "bar", months,
     [
       { label:"Jubilee", data:UP.jubilee.flareTotal, backgroundColor:"#C53030" },
@@ -5147,12 +5415,41 @@ function switchWaterSite(btn, loc) {
     b.style.color             = active ? "var(--green)" : "var(--mid)";
     b.style.fontWeight        = active ? "700"          : "600";
   });
-  var panels = { ph:"wt-ph-panel", ratc:"wt-ratc-panel", gtc:"wt-gtc-panel", eh:"wt-eh-panel" };
+  var panels = { summary:"wt-summary-panel", ph:"wt-ph-panel", ratc:"wt-ratc-panel", gtc:"wt-gtc-panel", eh:"wt-eh-panel" };
   Object.keys(panels).forEach(function(k){
     var el=document.getElementById(panels[k]);
     if(el) el.style.display = k===loc?"":"none";
   });
-  if (loc==="ph") buildWaterPage(window._waterYear||2025);
+  if (loc==="summary") renderWaterSummary();
+  else if (loc==="ph") buildWaterPage(window._waterYear||2025);
+}
+
+function renderWaterSummary() {
+  var wd = window.waterData && window.waterData[2025];
+  var totL = 0; var totC = 0; var moCount = 0;
+  if (wd && wd.litres) {
+    totL    = wd.litres.reduce(function(s,v){return s+v;},0);
+    totC    = wd.cost_ghc.reduce(function(s,v){return s+v;},0);
+    moCount = wd.months.length;
+  }
+  var kpiEl = document.getElementById("wt-summary-kpi");
+  if (kpiEl) kpiEl.innerHTML =
+    '<div class="sc bl"><div class="lb">PH Total (Jan–Jul 2025)</div><div class="vl" style="font-size:1.1rem;">'+(totL>0?totL.toLocaleString():"—")+'</div><div class="sb">Litres · '+moCount+' months</div></div>'+
+    '<div class="sc gd"><div class="lb">PH Cost (Jan–Jul 2025)</div><div class="vl" style="font-size:1rem;">GH¢ '+(totC>0?Math.round(totC).toLocaleString():"—")+'</div><div class="sb">Ghana Water Company</div></div>'+
+    '<div class="sc"><div class="lb">Sites with Data</div><div class="vl">1 of 4</div><div class="sb">PH only · RATC, GTC, EH pending</div></div>'+
+    '<div class="sc or"><div class="lb">2026 Data</div><div class="vl" style="font-size:.9rem;color:var(--grey);">Pending</div><div class="sb">Use + Add Water Data</div></div>';
+
+  // Water chart
+  if (wd && wd.litres) {
+    var wtData = Array(12).fill(null);
+    (wd.months||[]).forEach(function(m,i) {
+      var mi = MFULL.indexOf(m);
+      if (mi >= 0) wtData[mi] = wd.litres[i];
+    });
+    mkChart("wt-summary-chart","bar",MONTHS,
+      [{label:"Litres",data:wtData,backgroundColor:"#2B7CB5",borderRadius:4}],
+      {plugins:{legend:{display:false}}});
+  }
 }
 
 // ── VEHICLE REGISTRY SITE FILTER ──
@@ -5462,13 +5759,61 @@ function switchWasteSite(btn, site) {
     b.style.fontWeight        = active ? "700"          : "600";
   });
   window._waSite = site;
-  var panels = { ph:"wa-ph-panel", ratc:"wa-ratc-panel", gtc:"wa-gtc-panel", eh:"wa-eh-panel" };
+  var panels = { summary:"wa-summary-panel", ph:"wa-ph-panel", ratc:"wa-ratc-panel", gtc:"wa-gtc-panel", eh:"wa-eh-panel" };
   Object.keys(panels).forEach(function(k) {
     var el = document.getElementById(panels[k]);
     if (el) el.style.display = k === site ? "" : "none";
   });
-  if (site === "ph") buildWaste();
+  if (site === "summary") renderWasteSummary();
+  else if (site === "ph") buildWaste();
   else renderSiteWaste(site, window["_"+site+"WaYr"] || 2026);
+}
+
+function renderWasteSummary() {
+  // KPI cards
+  var yr = window._wasteYear || 2026;
+  var genPH  = (wasteData.general[yr]||[]).reduce(function(s,v){return s+(v||0);},0);
+  var plaPH  = (wasteData.plastic[yr]||[]).reduce(function(s,v){return s+(v||0);},0);
+  var plaRATCyr = (wasteData.plastic_by_location&&wasteData.plastic_by_location.RATC&&wasteData.plastic_by_location.RATC[yr])||[];
+  var plaGTCyr  = (wasteData.plastic_by_location&&wasteData.plastic_by_location.GTC&&wasteData.plastic_by_location.GTC[yr])||[];
+  var plaRATCt  = plaRATCyr.reduce(function(s,v){return s+(v||0);},0);
+  var plaGTCt   = plaGTCyr.reduce(function(s,v){return s+(v||0);},0);
+  var plaTotal  = plaPH + plaRATCt + plaGTCt;
+
+  var kpiEl = document.getElementById("wa-summary-kpi");
+  if (kpiEl) kpiEl.innerHTML =
+    '<div class="sc"><div class="lb">General Waste — PH</div><div class="vl">'+(genPH>0?genPH.toLocaleString():"—")+'</div><div class="sb">kg · '+yr+' YTD</div></div>'+
+    '<div class="sc or"><div class="lb">Plastic — All Sites</div><div class="vl">'+(plaTotal>0?plaTotal.toFixed(1):"—")+'</div><div class="sb">kg · PH+RATC+GTC</div></div>'+
+    '<div class="sc gd"><div class="lb">Food &amp; Packaging</div><div class="vl" style="font-size:.9rem;color:var(--grey);">Pending</div><div class="sb">Collection not started</div></div>'+
+    '<div class="sc bl"><div class="lb">Sites Tracked</div><div class="vl">3</div><div class="sb">PH · RATC · GTC</div></div>';
+
+  // Chart — plastic by site
+  mkChart("wa-summary-chart","bar",["PH","RATC","GTC","Energy House"],
+    [{label:"Plastic (kg)",data:[plaPH,plaRATCt,plaGTCt,0],backgroundColor:["#1A6B3E","#2B7CB5","#C59332","#0D9488"],borderRadius:4}],
+    {plugins:{legend:{display:false}}});
+  mkChart("wa-summary-gen-chart","bar",MONTHS,
+    [{label:"General (kg)",data:wasteData.general[yr]||Array(12).fill(null),backgroundColor:"#64748B",borderRadius:3}],
+    {plugins:{legend:{display:false}}});
+
+  // Summary table
+  var tbody = document.getElementById("wa-summary-tbody");
+  if (tbody) tbody.innerHTML =
+    "<tr><td><strong>Petroleum House (PH)</strong></td>"+
+    "<td class='num'>"+(genPH>0?genPH.toLocaleString():"—")+" kg</td>"+
+    "<td class='num'>"+(plaPH>0?plaPH.toFixed(1):"—")+" kg</td>"+
+    "<td><span class='cbadge cwarn'>⚠️ Commencing</span></td>"+
+    "<td><span class='cbadge cok'>✅ Active</span></td></tr>"+
+    "<tr><td><strong>RATC</strong></td><td>—</td>"+
+    "<td class='num'>"+(plaRATCt>0?plaRATCt.toFixed(1):"—")+" kg</td>"+
+    "<td><span class='cbadge bgr'>Pending</span></td>"+
+    "<td><span class='cbadge cwarn'>⚠️ Plastic only</span></td></tr>"+
+    "<tr><td><strong>GTC</strong></td><td>—</td>"+
+    "<td class='num'>"+(plaGTCt>0?plaGTCt.toFixed(1):"—")+" kg</td>"+
+    "<td><span class='cbadge bgr'>Pending</span></td>"+
+    "<td><span class='cbadge cwarn'>⚠️ Plastic only</span></td></tr>"+
+    "<tr><td><strong>Energy House</strong></td><td>—</td><td>—</td>"+
+    "<td><span class='cbadge bgr'>Pending</span></td>"+
+    "<td><span class='cbadge bgr'>Pending</span></td></tr>";
 }
 
 function setSiteWasteYear(site, yr, btn) {
@@ -5530,8 +5875,11 @@ function renderSiteWaste(site, yr) {
 }
 
 function buildWaste() {
-  const currentYr  = window._wasteYear || 2026;
-  const currentTab = window._wasteTab  || "wa-general-tab";
+  const currentYr   = window._wasteYear || 2026;
+  const currentTab  = window._wasteTab  || "wa-general-tab";
+  const currentSite = window._waSite    || "summary";
+  // Restore site tab
+  switchWasteSite(document.querySelector('.wa-site-btn[data-site="'+currentSite+'"]'), currentSite);
   renderWasteForYear(currentYr);
   // Restore year buttons
   document.querySelectorAll(".waste-yr-btn").forEach(b => {
@@ -5689,12 +6037,10 @@ function switchDCTab(btn, tabId) {
 }
 
 function buildDataCentre() {
-  // Render status into dc-status-content
-  var statusContainer = document.getElementById("dc-status-content");
-  if (statusContainer) {
-    // Run buildStatus logic and capture into this container
-    buildStatus(statusContainer);
-  }
+  buildStatus();
+  // Default to Data Status tab
+  var activeTab = window._dcTab || "dc-status";
+  switchDCTab(document.querySelector('.dc-tab-btn[data-tab="'+activeTab+'"]'), activeTab);
 }
 
 function buildStatus() {
