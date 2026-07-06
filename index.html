@@ -185,14 +185,14 @@
      SCOPE BANNER
 ═══════════════════════════════════════════════ -->
 <div style="background:var(--dgreen);padding:.18rem 1.5rem;display:flex;align-items:center;gap:.4rem;">
-  <span style="font-size:.58rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Select scope — changes the module tabs below</span>
+  <span style="font-size:.58rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Select view — Corporate Sites · JV Upstream · All GNPC</span>
 </div>
 <div class="scope-banner">
-  <div class="scope-btn active" onclick="setScope('ph',this)">🏢 Petroleum House</div>
+  <div class="scope-btn active" onclick="setScope('ph',this)">🏢 Corporate Sites</div>
   <div class="sdiv"></div>
-  <div class="scope-btn" onclick="setScope('upstream',this)">⛽ JV Assets — Offshore Fields</div>
+  <div class="scope-btn" onclick="setScope('upstream',this)">⛽ JV Upstream Assets</div>
   <div class="sdiv"></div>
-  <div class="scope-btn" onclick="setScope('all',this)">📊 All Scopes</div>
+  <div class="scope-btn" onclick="setScope('all',this)">📊 All GNPC</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════
@@ -250,28 +250,24 @@
         <div style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:.08rem;">⚠️ Mixed periods: S1 upstream Jan–May · S2 electricity Jan–Feb · S3 air travel Jan–Apr</div>
       </div>
       <div style="width:1px;height:56px;background:rgba(255,255,255,.2);align-self:center;"></div>
-      <!-- Scope breakdown chips -->
-      <div style="display:flex;gap:.55rem;flex-wrap:wrap;">
-        <div style="background:rgba(217,119,6,.25);border:1px solid rgba(217,119,6,.5);border-radius:8px;padding:.45rem .75rem;text-align:center;">
-          <div style="font-size:.58rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Scope 1</div>
-          <div style="font-size:1.1rem;font-weight:800;color:#FCD34D;" id="live-s1-chip">548,365</div>
-          <div style="font-size:.58rem;color:rgba(255,255,255,.45);">tCO₂e</div>
+      <!-- Scope summary — simple, not repetitive with accordion -->
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
+          <span style="color:#FCD34D;font-weight:700;">S1</span> Fleet + Upstream
         </div>
-        <div style="background:rgba(43,124,181,.25);border:1px solid rgba(43,124,181,.5);border-radius:8px;padding:.45rem .75rem;text-align:center;">
-          <div style="font-size:.58rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Scope 2</div>
-          <div style="font-size:1.1rem;font-weight:800;color:#93C5FD;" id="live-s2-chip">76</div>
-          <div style="font-size:.58rem;color:rgba(255,255,255,.45);">tCO₂e</div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
+          <span style="color:#93C5FD;font-weight:700;">S2</span> Electricity
         </div>
-        <div style="background:rgba(13,148,136,.25);border:1px solid rgba(13,148,136,.5);border-radius:8px;padding:.45rem .75rem;text-align:center;">
-          <div style="font-size:.58rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Scope 3</div>
-          <div style="font-size:1.1rem;font-weight:800;color:#6EE7B7;" id="live-s3-chip">178.81</div>
-          <div style="font-size:.58rem;color:rgba(255,255,255,.45);">tCO₂e</div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
+          <span style="color:#6EE7B7;font-weight:700;">S3</span> Air Travel
         </div>
-        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.45rem .75rem;text-align:center;">
-          <div style="font-size:.58rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;">Produced Water</div>
-          <div style="font-size:1.1rem;font-weight:800;color:#A8E6CF;">✅ All</div>
-          <div style="font-size:.58rem;color:rgba(255,255,255,.45);">EPA compliant</div>
+        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
+          <span style="color:#A8E6CF;font-weight:700;">✅</span> Produced Water EPA compliant
         </div>
+        <!-- Hidden IDs for updateLiveStatCards compatibility -->
+        <span id="live-s1-chip" style="display:none;"></span>
+        <span id="live-s2-chip" style="display:none;"></span>
+        <span id="live-s3-chip" style="display:none;"></span>
       </div>
     </div>
 
@@ -320,17 +316,28 @@
       <div style="font-size:.65rem;color:var(--grey);margin-left:.25rem;margin-right:.5rem;">tCO₂e</div>
       <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
     </button>
-    <div class="acc-body" style="display:none;padding:.75rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--lgreen);">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:.65rem;">
-        <div class="sc or"><div class="lb">Fleet — All Sites</div><div class="vl" id="live-fleet-ytd">39.84</div><div class="sb">tCO₂e · YTD</div></div>
-        <div class="sc rd"><div class="lb">Jubilee GHG (100%)</div><div class="vl" id="live-jub-ghg" style="font-size:1rem;">209,396</div><div class="sb" id="live-jub-ghg-sub">tCO₂e · S1 · YTD</div></div>
-        <div class="sc or"><div class="lb">TEN GHG (100%)</div><div class="vl" id="live-ten-ghg" style="font-size:1rem;">222,020</div><div class="sb" id="live-ten-ghg-sub">tCO₂e · S1 · YTD</div></div>
-        <div class="sc"><div class="lb">OCTP GHG (100%)</div><div class="vl" id="live-octp-ghg" style="font-size:1rem;">116,909</div><div class="sb" id="live-octp-ghg-sub">tCO₂e · S1 · YTD</div></div>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--lgreen);">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <!-- Left: KPI cards -->
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Breakdown</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
+            <div class="sc or"><div class="lb">Fleet — All Sites</div><div class="vl" id="live-fleet-ytd">39.84</div><div class="sb">tCO₂e · YTD</div></div>
+            <div class="sc rd"><div class="lb">Jubilee (100%)</div><div class="vl" id="live-jub-ghg" style="font-size:.95rem;">209,396</div><div class="sb" id="live-jub-ghg-sub">tCO₂e · YTD</div></div>
+            <div class="sc or"><div class="lb">TEN (100%)</div><div class="vl" id="live-ten-ghg" style="font-size:.95rem;">222,020</div><div class="sb" id="live-ten-ghg-sub">tCO₂e · YTD</div></div>
+            <div class="sc"><div class="lb">OCTP (100%)</div><div class="vl" id="live-octp-ghg" style="font-size:.95rem;">116,909</div><div class="sb" id="live-octp-ghg-sub">tCO₂e · YTD</div></div>
+          </div>
+          <div style="padding:.4rem .65rem;background:var(--lorange);border-radius:6px;font-size:.68rem;color:#92400E;">
+            <strong id="live-total-ghg">548,325</strong> tCO₂e upstream (100% field) <span id="live-total-ghg-sub"></span>
+          </div>
+          <div style="display:none;" id="live-s1-total"></div>
+        </div>
+        <!-- Right: Chart -->
+        <div class="card" style="margin:0;">
+          <div class="ct">Upstream GHG by Field — Jan–May 2026 (tCO₂e)</div>
+          <canvas id="ov-upstream-ghg"></canvas>
+        </div>
       </div>
-      <div style="padding:.4rem .7rem;background:var(--lorange);border-radius:6px;font-size:.7rem;color:#92400E;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">
-        <span>📊</span> Upstream total (100% field): <strong id="live-total-ghg">548,325</strong> tCO₂e <span id="live-total-ghg-sub" style="color:var(--grey);">all fields YTD</span> &nbsp;·&nbsp; PH fleet: <strong>39.84</strong> tCO₂e
-      </div>
-      <div style="display:none;" id="live-s1-total"></div>
     </div>
   </div>
 
@@ -346,11 +353,21 @@
       <div style="font-size:.65rem;color:var(--grey);margin-left:.25rem;margin-right:.5rem;">tCO₂e</div>
       <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
     </button>
-    <div class="acc-body" style="display:none;padding:.75rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:#EFF6FF;">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;">
-        <div class="sc bl"><div class="lb">Electricity Consumption YTD</div><div class="vl" id="live-kwh-ytd">173,714</div><div class="sb" id="live-kwh-ytd-sub">kWh · Jan–Feb 2026</div></div>
-        <div class="sc gd"><div class="lb">Energy Cost 2025</div><div class="vl" id="live-cost-2025">GH¢ 2.77M</div><div class="sb" id="live-cost-2025-sub">Full year</div></div>
-        <div class="sc bl"><div class="lb">Scope 2 Sub-label</div><div class="vl" style="font-size:.8rem;color:var(--grey);" id="live-co2-ytd-sub">Jan–Feb 2026</div><div class="sb">Coverage period</div></div>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:#EFF6FF;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Breakdown</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+            <div class="sc bl"><div class="lb">Consumption YTD</div><div class="vl" id="live-kwh-ytd">173,714</div><div class="sb" id="live-kwh-ytd-sub">kWh</div></div>
+            <div class="sc or"><div class="lb">Scope 2 Emissions</div><div class="vl" id="live-co2-ytd-disp">76</div><div class="sb" id="live-co2-ytd-sub">tCO₂e</div></div>
+            <div class="sc gd"><div class="lb">Energy Cost 2025</div><div class="vl" id="live-cost-2025" style="font-size:.95rem;">GH¢ 2.77M</div><div class="sb" id="live-cost-2025-sub">Full year</div></div>
+            <div class="sc bl"><div class="lb">Sites Tracked</div><div class="vl" style="font-size:.9rem;">PH + EH</div><div class="sb">Tema + Takoradi</div></div>
+          </div>
+        </div>
+        <div class="card" style="margin:0;">
+          <div class="ct">Annual Electricity — PH (kWh)</div>
+          <canvas id="ov-energy"></canvas>
+        </div>
       </div>
     </div>
   </div>
@@ -367,10 +384,20 @@
       <div style="font-size:.65rem;color:var(--grey);margin-left:.25rem;margin-right:.5rem;">tCO₂e</div>
       <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
     </button>
-    <div class="acc-body" style="display:none;padding:.75rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:#F0FDFA;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
-        <div class="sc bl"><div class="lb">Air Travel — All GNPC</div><div class="vl" id="live-travel-s3">178.81</div><div class="sb">tCO₂e · DEFRA+RF · YTD</div></div>
-        <div class="info" style="margin:0;font-size:.7rem;"><span>ℹ️</span><div>Business air travel across all GNPC directorates. DEFRA 2023 methodology with radiative forcing. Generator fuel, supply chain &amp; commuting pending.</div></div>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:#F0FDFA;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Breakdown</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
+            <div class="sc" style="border:1px solid #0D9488;"><div class="lb">Air Travel</div><div class="vl" id="live-travel-s3">178.81</div><div class="sb">tCO₂e · All GNPC</div></div>
+            <div class="sc bl"><div class="lb">Methodology</div><div class="vl" style="font-size:.75rem;color:var(--mid);">DEFRA 2023 + RF</div><div class="sb">Radiative forcing included</div></div>
+          </div>
+          <div class="info" style="margin:0;font-size:.7rem;"><span>ℹ️</span><div>Business air travel across all GNPC directorates and sites. Generator fuel, supply chain &amp; commuting emissions are pending data collection.</div></div>
+        </div>
+        <div class="card" style="margin:0;">
+          <div class="ct">Air Travel Emissions by Month — 2026 (tCO₂e)</div>
+          <canvas id="ov-travel"></canvas>
+        </div>
       </div>
     </div>
   </div>
@@ -386,45 +413,45 @@
       <div style="font-size:.75rem;color:var(--green);font-weight:700;margin-right:.5rem;">4 indicators</div>
       <div class="acc-chevron" style="font-size:.8rem;color:var(--grey);transition:transform .25s;">▼</div>
     </button>
-    <div class="acc-body" style="display:none;padding:.75rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--lgreen);">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:.65rem;">
-        <div class="sc"><div class="lb">Plastic Waste YTD</div><div class="vl" id="live-plastic-ytd">278 kg</div><div class="sb" id="live-plastic-ytd-sub">Jan–Mar 2026</div></div>
-        <div class="sc bl"><div class="lb">Water Consumption</div><div class="vl" style="font-size:1rem;" id="live-wt-total">2,079,000</div><div class="sb" id="live-wt-total-sub">Litres · Jan–Jul 2025</div></div>
-        <div class="sc gd"><div class="lb">Produced Water — Upstream</div><div class="vl" style="font-size:1.1rem;">✅ All</div><div class="sb">Within EPA 29 mg/L</div></div>
-        <div class="sc"><div class="lb">Food &amp; Pkg Waste</div><div class="vl" style="font-size:.95rem;color:var(--grey);">Pending</div><div class="sb">Collection not started</div></div>
+    <div class="acc-body" style="display:none;padding:.85rem;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--lgreen);">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.85rem;">
+        <div>
+          <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">Waste &amp; Water</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+            <div class="sc"><div class="lb">Plastic Waste YTD</div><div class="vl" id="live-plastic-ytd">278 kg</div><div class="sb" id="live-plastic-ytd-sub">Jan–Mar 2026</div></div>
+            <div class="sc bl"><div class="lb">Water Consumption</div><div class="vl" style="font-size:.95rem;" id="live-wt-total">2,079,000</div><div class="sb" id="live-wt-total-sub">Litres</div></div>
+            <div class="sc gd"><div class="lb">Produced Water</div><div class="vl" style="font-size:1rem;">✅ All</div><div class="sb">EPA 29 mg/L compliant</div></div>
+            <div class="sc"><div class="lb">Food &amp; Pkg Waste</div><div class="vl" style="font-size:.85rem;color:var(--grey);">Pending</div><div class="sb">Collection not started</div></div>
+          </div>
+        </div>
+        <div class="card" style="margin:0;">
+          <div class="ct">Plastic Waste — PH Monthly (kg)</div>
+          <canvas id="ov-plastic"></canvas>
+        </div>
       </div>
-      <!-- KPI snapshot inside accordion -->
-      <div style="font-size:.65rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;display:flex;align-items:center;gap:.75rem;">
+      <!-- KPI snapshot -->
+      <div style="font-size:.63rem;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;display:flex;align-items:center;gap:.75rem;">
         KPI Snapshot
-        <span style="display:flex;align-items:center;gap:.75rem;font-weight:400;text-transform:none;letter-spacing:0;">
-          <span style="display:flex;align-items:center;gap:.25rem;"><span style="width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block;"></span>On track</span>
-          <span style="display:flex;align-items:center;gap:.25rem;"><span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;display:inline-block;"></span>Monitor</span>
-          <span style="display:flex;align-items:center;gap:.25rem;"><span style="width:8px;height:8px;border-radius:50%;background:#CBD5E0;display:inline-block;"></span>Pending</span>
+        <span style="display:flex;align-items:center;gap:.65rem;font-weight:400;text-transform:none;letter-spacing:0;font-size:.62rem;">
+          <span style="display:flex;align-items:center;gap:.2rem;"><span style="width:7px;height:7px;border-radius:50%;background:#22C55E;display:inline-block;"></span>On track</span>
+          <span style="display:flex;align-items:center;gap:.2rem;"><span style="width:7px;height:7px;border-radius:50%;background:#CBD5E0;display:inline-block;"></span>Pending</span>
         </span>
       </div>
       <div class="kgrid" id="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
-        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Plastic Waste (PH)</div><div class="kv">↓ 2026 vs 2025 · On track</div></div></div>
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Plastic Waste (PH)</div><div class="kv">↓ 2026 vs 2025</div></div></div>
         <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Jubilee Produced Water</div><div class="kv">Compliant all months 2026</div></div></div>
         <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">TEN Produced Water</div><div class="kv">Compliant all months 2026</div></div></div>
-        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Data Platform</div><div class="kv">Operational · Multi-user</div></div></div>
-        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Water Consumption (PH)</div><div class="kv">2,079,000 L · Jan–Jul 2025</div></div></div>
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Platform</div><div class="kv">Operational · Multi-user</div></div></div>
         <div class="kpi kpi-grey" style="display:none;"><div class="kdot gr"></div><div><div class="kn">Food &amp; Pkg Waste</div><div class="kv">Collection not commenced</div></div></div>
-        <div class="kpi kpi-grey" style="display:none;"><div class="kdot gr"></div><div><div class="kn">PH Scope 1 (Generators)</div><div class="kv">Data pending</div></div></div>
+        <div class="kpi kpi-grey" style="display:none;"><div class="kdot gr"></div><div><div class="kn">PH Generators</div><div class="kv">Data pending</div></div></div>
         <div class="kpi kpi-grey" style="display:none;"><div class="kdot gr"></div><div><div class="kn">OCTP Produced Water</div><div class="kv">Not currently tracked</div></div></div>
+        <div class="kpi kpi-green" style="display:none;"><div class="kdot g"></div><div><div class="kn">Water (PH)</div><div class="kv">2,079,000 L · Jan–Jul 2025</div></div></div>
       </div>
     </div>
   </div>
 
 
-  <!-- Row 3: charts -->
-  <div class="g2">
-    <div class="card"><div class="ct">Annual Energy Consumption — PH (kWh)</div><canvas id="ov-energy"></canvas></div>
-    <div class="card"><div class="ct">Upstream GHG by Field — Jan–May 2026 (tCO₂e)</div><canvas id="ov-upstream-ghg"></canvas></div>
-  </div>
-  <div class="g3">
-    <div class="card"><div class="ct">Scope 2 CO₂e — PH Annual (tCO₂e)</div><canvas id="ov-co2"></canvas></div>
-    <div class="card"><div class="ct">Plastic Waste — PH Monthly 2025 (kg)</div><canvas id="ov-plastic"></canvas></div>
-  </div>
+  <!-- Charts moved into accordion sections -->
   <div class="g2">
     <div class="card"><div class="ct">Gas Flared by Field — Jan–May 2026 (mmscf)</div><canvas id="ov-flare"></canvas></div>
     <div class="card"><div class="ct">Annual Energy Cost — PH (GH¢)</div><canvas id="ov-cost"></canvas></div>
@@ -4809,12 +4836,26 @@ function toggleAccordion(id) {
   var acc  = document.getElementById(id);
   if (!acc) return;
   var body = acc.querySelector(".acc-body");
+  var open = body.style.display !== "none";
+
+  // Close all other accordions first
+  document.querySelectorAll(".ov-accordion").forEach(function(a) {
+    if (a.id !== id) {
+      var b = a.querySelector(".acc-body");
+      var c = a.querySelector(".acc-chevron");
+      var btn = a.querySelector("button");
+      if (b) b.style.display = "none";
+      if (c) c.style.transform = "";
+      if (btn) btn.style.borderRadius = "10px";
+    }
+  });
+
+  // Toggle clicked one
   var chev = acc.querySelector(".acc-chevron");
   var btn  = acc.querySelector("button");
-  var open = body.style.display !== "none";
   body.style.display   = open ? "none" : "";
-  if (chev) chev.style.transform = open ? "" : "rotate(180deg)";
-  if (btn)  btn.style.borderRadius = open ? "10px" : "10px 10px 0 0";
+  if (chev) chev.style.transform   = open ? "" : "rotate(180deg)";
+  if (btn)  btn.style.borderRadius  = open ? "10px" : "10px 10px 0 0";
 }
 
 function buildOverview() {
@@ -4843,6 +4884,16 @@ function buildOverview() {
       { label:"TEN",     data:UP.ten.ghg,     backgroundColor:"#D97706" },
       { label:"OCTP",    data:UP.octp.ghg,    backgroundColor:"#1A6B3E" }
     ], legendOpts);
+
+  // Air travel monthly chart — S3 accordion
+  var travelByMo = Array(12).fill(0);
+  getActiveTravelRows().forEach(function(r) {
+    var mi = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].indexOf(r.month);
+    if (mi >= 0) travelByMo[mi] = +(travelByMo[mi] + (r.co2e_tco2e||0)).toFixed(3);
+  });
+  mkChart("ov-travel", "bar", MONTHS,
+    [{ label:"tCO₂e", data:travelByMo, backgroundColor:"#0D9488", borderRadius:4 }],
+    { plugins:{ legend:{ display:false } } });
 
   mkChart("ov-flare", "bar", months,
     [
