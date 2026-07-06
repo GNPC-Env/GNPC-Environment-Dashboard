@@ -452,18 +452,13 @@
 
 
   <!-- Charts moved into accordion sections -->
-  <div class="g2">
-    <div class="card"><div class="ct">Gas Flared by Field — Jan–May 2026 (mmscf)</div><canvas id="ov-flare"></canvas></div>
-    <div class="card"><div class="ct">Annual Energy Cost — PH (GH¢)</div><canvas id="ov-cost"></canvas></div>
-  </div>
-
 </div>
 
 <!-- ENERGY -->
 <div class="page" id="page-energy">
   <!-- Location sub-tabs -->
   <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
-    <button class="en-loc-btn active" data-loc="all"  onclick="switchEnergyLocation(this,'all')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 All Sites</button>
+    <button class="en-loc-btn active" data-loc="all"  onclick="switchEnergyLocation(this,'all')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 Summary</button>
     <button class="en-loc-btn"        data-loc="ph"   onclick="switchEnergyLocation(this,'ph')"   style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🏢 Petroleum House</button>
     <button class="en-loc-btn"        data-loc="ratc" onclick="switchEnergyLocation(this,'ratc')" style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🔬 RATC</button>
     <button class="en-loc-btn"        data-loc="gtc"  onclick="switchEnergyLocation(this,'gtc')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid transparent;background:none;font-size:.75rem;font-weight:600;color:var(--mid);cursor:pointer;margin-bottom:-2px;">🎓 GTC</button>
@@ -472,9 +467,9 @@
 
   <!-- ALL SITES panel -->
   <div id="en-all-panel">
-    <div class="info"><span>📊</span><div><strong>All Corporate Sites — Electricity Comparison.</strong> Overview across all four GNPC facilities. Select a site tab above for detailed monthly data and charts.</div></div>
+    <div class="info"><span>📊</span><div><strong>Electricity Summary — All Corporate Sites.</strong> Overview across all four GNPC facilities. Select a site tab above for detailed monthly data and charts.</div></div>
     <div id="en-all-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;"></div>
-    <div class="card" style="margin-bottom:1rem;"><div class="ct">Monthly Consumption by Site — kWh</div><canvas id="en-all-chart"></canvas></div>
+    <div class="card" style="margin-bottom:1rem;"><div class="ct">Monthly Electricity Consumption by Site — kWh</div><canvas id="en-all-chart"></canvas></div>
     <div class="card"><div class="ct">Site Summary</div>
       <div class="tw"><table><thead><tr><th>Site</th><th>Period</th><th>Consumption (kWh)</th><th>Cost (GH¢)</th><th>Scope 2 (tCO₂e)</th><th>Data Status</th></tr></thead>
       <tbody id="en-all-tbody"></tbody></table></div>
