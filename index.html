@@ -1524,16 +1524,8 @@ CREATE POLICY "Auth users can insert travel" ON petroleum_house_travel  FOR INSE
   <!-- User Setup -->
   <div class="card" style="margin-bottom:1rem;">
     <div class="ct">Step 3 — Create Authorised Users</div>
-    <p style="font-size:.78rem;color:var(--mid);margin-bottom:.75rem;">In the Supabase dashboard → Authentication → Users → Invite user. Create one account per authorised team member:</p>
-    <table><thead><tr><th>Name</th><th>Suggested Email</th><th>Role</th></tr></thead>
-    <tbody>
-      <tr><td>Nina Antwi-Yeboah</td><td>n.antwi-yeboah@gnpc.com.gh</td><td>Environment Officer (Admin)</td></tr>
-      <tr><td>Seth Foli</td><td>s.foli@gnpc.com.gh</td><td>Environment Department</td></tr>
-      <tr><td>Emelia Osei-Asante</td><td>e.osei-asante@gnpc.com.gh</td><td>Environment Department</td></tr>
-      <tr><td>Kofi Antwi Mainoo</td><td>k.antwi-mainoo@gnpc.com.gh</td><td>Environment Department</td></tr>
-      <tr><td>Charles Owusu</td><td>c.owusu@gnpc.com.gh</td><td>Environment Department</td></tr>
-    </tbody></table>
-    <p style="font-size:.72rem;color:var(--grey);margin-top:.65rem;">Each user sets their own password via the invite email. No passwords are stored in this file.</p>
+    <div class="info"><span>ℹ️</span><div>User management has been moved to <strong>Step 5 — User Management</strong> below. Use the Invite New User form there to add colleagues directly. You can also manage users via your <a href="https://supabase.com/dashboard/project/ukjfqfcddvmbgmxitgsv/auth/users" target="_blank" style="color:var(--green);">Supabase Dashboard → Authentication → Users</a>.</div></div>
+    <p style="font-size:.72rem;color:var(--grey);margin-top:.5rem;">Only <strong>n.antwiyeboah@gnpcghana.com</strong> has Admin access. All other users have data view and entry access only.</p>
   </div>
 
   <!-- Status checker -->
