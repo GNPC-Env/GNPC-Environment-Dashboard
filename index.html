@@ -276,7 +276,7 @@
       <button onclick="showTab('summary',document.querySelector('#nav-ph .nt:nth-child(2)'))" style="padding:.32rem .85rem;background:var(--gold);color:white;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;">📄 Generate Report</button>
       <div style="display:flex;align-items:center;gap:.5rem;">
         <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;"></div>
-        <span style="font-size:.68rem;color:rgba(255,255,255,.6);">PH S1+S2+S3:</span>
+        <span style="font-size:.68rem;color:rgba(255,255,255,.6);">Corporate Sites S1+S2+S3:</span>
         <strong style="font-size:.78rem;color:var(--gold);" id="live-ph-total">294.65</strong>
         <span style="font-size:.62rem;color:rgba(255,255,255,.45);">tCO₂e</span>
       </div>
@@ -290,7 +290,7 @@
       <div style="color:rgba(255,255,255,.2);">|</div>
       <div style="display:flex;align-items:center;gap:.5rem;">
         <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);flex-shrink:0;"></div>
-        <span style="font-size:.65rem;color:rgba(255,255,255,.45);">Petroleum House + JV Upstream Assets (Jubilee · TEN · OCTP)</span>
+        <span style="font-size:.65rem;color:rgba(255,255,255,.45);">Corporate Sites + JV Upstream Assets (Jubilee · TEN · OCTP)</span>
       </div>
     </div>
   </div>
@@ -1267,7 +1267,7 @@
 <!-- DATA STATUS -->
 <div class="page" id="page-status">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
-    <div class="sl" style="margin:0;flex:1;">Data Status — Petroleum House</div>
+    <div class="sl" style="margin:0;flex:1;">Data Status — Corporate Sites</div>
     <span style="font-size:.68rem;color:var(--grey);">Last synced: <span id="status-last-sync">Not yet synced</span> &nbsp;<button id="status-refresh-btn" onclick="refreshDataStatus()" style="background:none;border:1px solid var(--border);border-radius:4px;padding:.15rem .5rem;font-size:.65rem;color:var(--mid);cursor:pointer;">↻ Refresh</button></span>
   </div>
   <div style="font-size:.7rem;color:var(--mid);margin-bottom:.85rem;">Key: <span style="background:#DCFCE7;color:#15803D;padding:.1rem .38rem;border-radius:4px;font-weight:700;">✅</span> Current &nbsp;<span style="background:#FEF9C3;color:#A16207;padding:.1rem .38rem;border-radius:4px;font-weight:700;">⚠️</span> Anomaly &nbsp;<span style="background:#FEE2E2;color:#B91C1C;padding:.1rem .38rem;border-radius:4px;font-weight:700;">❌</span> Missing &nbsp;<span style="background:#F0FDFA;color:#0D9488;padding:.1rem .38rem;border-radius:4px;font-weight:700;">🔄</span> Pending</div>
@@ -2952,7 +2952,7 @@ function switchField(f, el) {
 
 // ── PDF EXPORT ──
 const TAB_TITLES = {
-  overview:       "Petroleum House — Overview",
+  overview:       "GNPC Environmental Performance — Overview",
   energy:         "Electricity Consumption Report",
   waste:          "Waste Management Report",
   water:          "Water Consumption Report",
