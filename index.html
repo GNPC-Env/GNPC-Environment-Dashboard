@@ -184,15 +184,11 @@
 <!-- ═══════════════════════════════════════════════
      SCOPE BANNER
 ═══════════════════════════════════════════════ -->
-<div style="background:var(--dgreen);padding:.18rem 1.5rem;display:flex;align-items:center;gap:.4rem;">
-  <span style="font-size:.58rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Select view — Corporate Sites · JV Upstream · All GNPC</span>
-</div>
+
 <div class="scope-banner">
   <div class="scope-btn active" onclick="setScope('ph',this)">🏢 Corporate Sites</div>
   <div class="sdiv"></div>
   <div class="scope-btn" onclick="setScope('upstream',this)">⛽ JV Upstream Assets</div>
-  <div class="sdiv"></div>
-  <div class="scope-btn" onclick="setScope('all',this)">📊 All GNPC</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════
@@ -233,66 +229,54 @@
 <!-- OVERVIEW -->
 <div class="page active" id="page-overview">
 
-  <!-- ── TOTAL GNPC EMISSIONS SCORE ── -->
+  <!-- ── TOTAL GNPC EMISSIONS BANNER ── -->
   <div style="background:linear-gradient(135deg,var(--dgreen) 0%,var(--green) 55%,#1a5a8a 100%);border-radius:12px;padding:1.2rem 1.6rem;margin-bottom:.75rem;">
-    <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:.3rem;">Ghana National Petroleum Corporation · Environment Department · 2026 YTD</div>
-    <div style="font-size:.85rem;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:.65rem;">Total GNPC Emissions Score</div>
 
-    <!-- Big total -->
-    <div style="display:flex;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+    <!-- Header row -->
+    <div style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45);margin-bottom:.75rem;">
+      Ghana National Petroleum Corporation &nbsp;·&nbsp; Environment Department &nbsp;·&nbsp; 2026 YTD
+    </div>
+
+    <!-- Big number + split -->
+    <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;margin-bottom:.85rem;">
+      <!-- Headline total -->
       <div>
-        <div style="font-size:.62rem;color:rgba(255,255,255,.5);margin-bottom:.15rem;text-transform:uppercase;letter-spacing:.07em;">Combined S1+S2+S3</div>
+        <div style="font-size:.62rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">Total GNPC Emissions</div>
         <div style="display:flex;align-items:baseline;gap:.4rem;">
           <span style="font-size:2.8rem;font-weight:900;color:white;line-height:1;" id="live-gnpc-total">548,620</span>
-          <span style="font-size:.85rem;color:rgba(255,255,255,.6);font-weight:600;">tCO₂e</span>
+          <span style="font-size:.85rem;color:rgba(255,255,255,.55);font-weight:600;">tCO₂e</span>
         </div>
-        <div style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:.15rem;">PH (S1+S2+S3) + Upstream (S1) 100% field</div>
-        <div style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:.08rem;">⚠️ Mixed periods: S1 upstream Jan–May · S2 electricity Jan–Feb · S3 air travel Jan–Apr</div>
+        <div style="font-size:.6rem;color:rgba(255,255,255,.35);margin-top:.2rem;">Corporate Sites + JV Upstream (100% field)</div>
       </div>
-      <div style="width:1px;height:56px;background:rgba(255,255,255,.2);align-self:center;"></div>
-      <!-- Scope summary — simple, not repetitive with accordion -->
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
-        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
-          <span style="color:#FCD34D;font-weight:700;">S1</span> Fleet + Upstream
+
+      <!-- Divider -->
+      <div style="width:1px;height:52px;background:rgba(255,255,255,.2);flex-shrink:0;"></div>
+
+      <!-- Corporate vs Upstream split -->
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;">Corporate Sites</div>
+          <div style="font-size:1.3rem;font-weight:800;color:var(--gold);" id="live-ph-total">285.57</div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.4);">tCO₂e · S1+S2+S3</div>
         </div>
-        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
-          <span style="color:#93C5FD;font-weight:700;">S2</span> Electricity
+        <div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;">JV Upstream (100% field)</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#7EC8E3;" id="live-upstream-banner">548,325</div>
+          <div style="font-size:.58rem;color:rgba(255,255,255,.4);">tCO₂e · S1 · Jubilee · TEN · OCTP</div>
         </div>
-        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
-          <span style="color:#6EE7B7;font-weight:700;">S3</span> Air Travel
-        </div>
-        <div style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:.4rem .75rem;font-size:.68rem;color:rgba(255,255,255,.7);">
-          <span style="color:#A8E6CF;font-weight:700;">✅</span> Produced Water EPA compliant
-        </div>
-        <!-- Hidden IDs for updateLiveStatCards compatibility -->
-        <span id="live-s1-chip" style="display:none;"></span>
-        <span id="live-s2-chip" style="display:none;"></span>
-        <span id="live-s3-chip" style="display:none;"></span>
       </div>
     </div>
 
-    <!-- PH vs Upstream split -->
-    <div style="display:flex;gap:1.2rem;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.15);padding-top:.7rem;align-items:center;">
-      <button onclick="showTab('summary',document.querySelector('#nav-ph .nt:nth-child(2)'))" style="padding:.32rem .85rem;background:var(--gold);color:white;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;">📄 Generate Report</button>
-      <div style="display:flex;align-items:center;gap:.5rem;">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;"></div>
-        <span style="font-size:.68rem;color:rgba(255,255,255,.6);">Corporate Sites S1+S2+S3:</span>
-        <strong style="font-size:.78rem;color:var(--gold);" id="live-ph-total">294.65</strong>
-        <span style="font-size:.62rem;color:rgba(255,255,255,.45);">tCO₂e</span>
-      </div>
-      <div style="color:rgba(255,255,255,.2);">|</div>
-      <div style="display:flex;align-items:center;gap:.5rem;">
-        <div style="width:8px;height:8px;border-radius:50%;background:#7EC8E3;flex-shrink:0;"></div>
-        <span style="font-size:.68rem;color:rgba(255,255,255,.6);">Upstream S1 (100% field):</span>
-        <strong style="font-size:.78rem;color:#7EC8E3;" id="live-upstream-banner">548,325</strong>
-        <span style="font-size:.62rem;color:rgba(255,255,255,.45);">tCO₂e</span>
-      </div>
-      <div style="color:rgba(255,255,255,.2);">|</div>
-      <div style="display:flex;align-items:center;gap:.5rem;">
-        <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);flex-shrink:0;"></div>
-        <span style="font-size:.65rem;color:rgba(255,255,255,.45);">Corporate Sites + JV Upstream Assets (Jubilee · TEN · OCTP)</span>
-      </div>
+    <!-- Footer row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;border-top:1px solid rgba(255,255,255,.12);padding-top:.65rem;">
+      <div style="font-size:.6rem;color:rgba(255,255,255,.35);">⚠️ Mixed coverage periods — expand scope sections below for detail</div>
+      <button onclick="showTab('summary',document.querySelector('#nav-ph .nt:nth-child(2)'))" style="padding:.32rem .9rem;background:var(--gold);color:white;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;">📄 Generate Report</button>
     </div>
+
+    <!-- Hidden IDs for compatibility -->
+    <span id="live-s1-chip" style="display:none;"></span>
+    <span id="live-s2-chip" style="display:none;"></span>
+    <span id="live-s3-chip" style="display:none;"></span>
   </div>
 
   <!-- ── DATA HEALTH CARD ── -->
