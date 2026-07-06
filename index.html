@@ -2051,8 +2051,8 @@ let activeTab = "overview";
 function showTab(tabId) {
   // Block admin tab for non-admins
   if (tabId === "admin") {
-    const email = (window.currentUserEmail || window.currentUser || "").toLowerCase();
-    if (email !== ADMIN_EMAIL.toLowerCase()) {
+    const email = (window.currentUserEmail || "").trim().toLowerCase();
+    if (!email || email !== ADMIN_EMAIL.trim().toLowerCase()) {
       alert("⚠️ Admin access is restricted to the GNPC Environment Officer.");
       return;
     }
