@@ -2139,35 +2139,7 @@ async function doLogin() {
 
   btn.textContent = "Signing in…"; btn.style.opacity = ".7"; btn.disabled = true;
 
-  // Check connectivity first
-  const online = await checkConnectivity();
-
-  if (!online) {
-    // Offline mode — skip Supabase auth, use a local access check
-    // Show offline warning and allow entry with just a name selection
-    errEl.textContent = "⚠️ Network unavailable. Offline mode: authentication is bypassed. Data entry will be queued locally.";
-    errEl.style.background = "#FEF9C3";
-    errEl.style.color = "#A16207";
-    errEl.style.display = "block";
-    window._offlineMode = true;
-    // Use email prefix as display name
-    const displayName = email.split("@")[0].replace(/[._]/g," ").replace(/\b\w/g,c=>c.toUpperCase());
-    window.currentUser      = displayName;
-    window.currentUserEmail = email;
-    const el = document.getElementById("log-current-user");
-    if (el) { el.textContent = displayName + " (Offline)"; el.style.color = "var(--orange)"; el.style.fontWeight = "700"; }
-    document.getElementById("lockScreen").style.display = "none";
-    // Show admin tab for admin email even in offline mode
-    const adminBtnOff = document.getElementById("admin-nav-btn");
-    if (adminBtnOff) adminBtnOff.style.display = email.toLowerCase() === ADMIN_EMAIL.toLowerCase() ? "flex" : "none";
-    showTab("overview");
-    buildOverview(); built.overview = true;
-    // Show offline banner
-    showOfflineBanner();
-    btn.textContent = "Sign In"; btn.style.opacity = "1"; btn.disabled = false;
-    return;
-  }
-
+  // Attempt Supabase authentication directly — no offline bypass
   try {
     const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
     if (error) throw error;
