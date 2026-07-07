@@ -865,228 +865,72 @@
   <!-- PH Water panel -->
   <div id="wt-ph-panel" style="display:none;">
 
-  ng="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GNPC — Environmental Performance Platform</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-<style>
-  :root{--green:#1A6B3E;--dgreen:#124D2C;--lgreen:#E8F5ED;--gold:#C59332;--lgold:#FDF6E3;--blue:#2B7CB5;--lblue:#EBF4FB;--red:#C53030;--lred:#FEF2F2;--orange:#D97706;--lorange:#FFFBEB;--teal:#0D9488;--lteal:#F0FDFA;--slate:#1E293B;--mid:#475569;--light:#F1F5F2;--border:#D4E6DA;--white:#FFFFFF;--grey:#64748B;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--light);color:var(--slate);}
-  header{background:var(--green);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.2);}
-  .hl{display:flex;align-items:center;gap:.6rem;}
-  .ht h1{font-size:.9rem;font-weight:700;letter-spacing:.05em;color:white;}
-  .ht p{font-size:.63rem;color:rgba(255,255,255,.6);}
-  .hr2{display:flex;align-items:center;gap:.6rem;}
-  .hdate{font-size:.68rem;color:rgba(255,255,255,.6);}
-  .hbtn{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.3);padding:.3rem .8rem;border-radius:6px;font-size:.73rem;font-weight:600;cursor:pointer;transition:background .15s;}
-  .hbtn:hover{background:rgba(255,255,255,.25);}
-  .hbtn.gold{background:var(--gold);border-color:var(--gold);}
-  .hbtn.gold:hover{background:#a37a28;}
-  .scope-banner{display:flex;align-items:center;gap:0;background:var(--dgreen);padding:0 1.5rem;border-bottom:1px solid rgba(255,255,255,.08);}
-  .scope-btn{padding:.48rem 1rem;font-size:.7rem;font-weight:700;cursor:pointer;color:rgba(255,255,255,.55);border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;}
-  .scope-btn:hover{color:white;}
-  .scope-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
-  .sdiv{width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 .2rem;}
-  nav{background:#1a3a2a;display:flex;padding:0 1.5rem;overflow-x:auto;gap:0;}
-  .nt{padding:.52rem .95rem;color:rgba(255,255,255,.55);font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;}
-  .nt:hover{color:white;}
-  .nt.active{color:var(--gold);border-bottom-color:var(--gold);}
-  .page{display:none;padding:1.3rem;max-width:1400px;margin:0 auto;}
-  .page.active{display:block;}
-  .sr{display:grid;gap:.85rem;margin-bottom:1rem;}
-  .s5{grid-template-columns:repeat(5,1fr);}
-  .s4{grid-template-columns:repeat(4,1fr);}
-  .s3{grid-template-columns:repeat(3,1fr);}
-  .s2{grid-template-columns:repeat(2,1fr);}
-  .sc{background:white;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);}
-  .sc .lb{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.28rem;}
-  .sc .vl{font-size:1.6rem;font-weight:800;color:var(--green);line-height:1;}
-  .sc .sb{font-size:.63rem;color:var(--grey);margin-top:.2rem;}
-  .sc.gd .vl{color:var(--gold);}
-  .sc.bl .vl{color:var(--blue);}
-  .sc.or .vl{color:var(--orange);}
-  .sc.tl .vl{color:var(--teal);}
-  .sc.gr .vl{color:var(--grey);}
-  .sc.rd .vl{color:var(--red);}
-  .g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
-  .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;}
-  .g31{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1rem;}
-  /* Chart cards — fixed height so charts never stretch */
-  .card{background:white;border-radius:10px;padding:.85rem 1rem;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);}
-  .card.full{grid-column:1/-1;}
-  .card canvas{display:block;width:100% !important;height:200px !important;max-height:200px !important;}
-  .ct{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--slate);margin-bottom:.75rem;padding-bottom:.45rem;border-bottom:2px solid var(--lgreen);}
-  .sl{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin:1rem 0 .5rem;display:flex;align-items:center;gap:.5rem;}
-  .sl::after{content:"";flex:1;height:1px;background:var(--border);}
-  .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-bottom:1rem;}
-  .kpi{background:white;border-radius:9px;padding:.75rem .85rem;border:1px solid var(--border);display:flex;align-items:center;gap:.65rem;}
-  .kdot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
-  .kdot.g{background:#22C55E;}
-  .kdot.a{background:#F59E0B;}
-  .kdot.r{background:#EF4444;}
-  .kdot.gr{background:#CBD5E0;}
-  .kn{font-size:.7rem;font-weight:700;color:var(--slate);}
-  .kv{font-size:.65rem;color:var(--grey);}
-  .pending{background:var(--lteal);border:1px solid var(--teal);border-radius:9px;padding:.85rem 1rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.65rem;}
-  .pending h4{font-size:.76rem;font-weight:700;color:var(--teal);margin-bottom:.18rem;}
-  .pending p{font-size:.7rem;color:var(--mid);}
-  .alert{background:var(--lorange);border:1px solid var(--orange);border-radius:9px;padding:.75rem .95rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.65rem;font-size:.73rem;color:var(--slate);}
-  .info{background:var(--lblue);border:1px solid var(--blue);border-radius:9px;padding:.75rem .95rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:.65rem;font-size:.73rem;color:var(--slate);}
-  .ftabs{display:flex;gap:.45rem;margin-bottom:1rem;flex-wrap:wrap;}
-  .ftab{padding:.32rem .8rem;font-size:.73rem;font-weight:600;border-radius:6px;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--mid);transition:all .15s;}
-  .ftab.active{background:var(--green);color:white;border-color:var(--green);}
-  .cbadge{display:inline-block;padding:.1rem .45rem;border-radius:6px;font-size:.68rem;font-weight:700;}
-  .cok{background:var(--lgreen);color:var(--green);}
-  .cwarn{background:var(--lorange);color:var(--orange);}
-  .cflag{background:var(--lred);color:var(--red);}
-  .tw{overflow-x:auto;}
-  table{width:100%;border-collapse:collapse;font-size:.77rem;}
-  thead th{background:var(--green);color:white;padding:.48rem .72rem;text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
-  tbody tr:nth-child(even){background:var(--lgreen);}
-  tbody tr:hover{background:#c8ddd0;}
-  tbody td{padding:.45rem .72rem;border-bottom:1px solid var(--border);}
-  td.num{text-align:right;font-weight:600;}
-  .badge{display:inline-block;padding:.1rem .4rem;border-radius:20px;font-size:.63rem;font-weight:700;}
-  .bg{background:var(--lgreen);color:var(--green);}
-  .ba{background:var(--lgold);color:var(--gold);}
-  .bgr{background:#F0F0F0;color:var(--grey);}
-  .leg{display:flex;gap:.85rem;flex-wrap:wrap;margin-bottom:.6rem;}
-  .li{display:flex;align-items:center;gap:.28rem;font-size:.68rem;color:var(--mid);}
-  .ld{width:9px;height:9px;border-radius:50%;}
-  .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem;color:var(--grey);text-align:center;gap:.4rem;}
-  .phi{font-size:2.5rem;opacity:.4;}
-  .ph h3{font-size:.95rem;font-weight:600;color:var(--mid);}
-  .ph p{font-size:.73rem;max-width:340px;}
-  .scope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-top:.5rem;}
-  .scope-box{border-radius:9px;padding:.85rem;}
-  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center;}
-  .overlay.open{display:flex;}
-  .modal{background:white;border-radius:12px;padding:1.5rem;width:540px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2);}
-  .modal h2{font-size:.92rem;color:var(--green);margin-bottom:.95rem;font-weight:700;}
-  .mtabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:.85rem;overflow-x:auto;}
-  .mt{padding:.35rem .9rem;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--mid);border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;}
-  .mt.active{color:var(--green);border-bottom-color:var(--green);}
-  .ms{display:none;}
-  .ms.active{display:block;}
-  .fr{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem;}
-  .fg{display:flex;flex-direction:column;gap:.2rem;}
-  .fg.full{grid-column:1/-1;}
-  label{font-size:.66rem;font-weight:600;color:var(--mid);}
-  input,select,textarea{padding:.4rem .58rem;border:1.5px solid var(--border);border-radius:6px;font-size:.78rem;color:var(--slate);outline:none;width:100%;background:white;transition:border-color .15s;}
-  input:focus,select:focus,textarea:focus{border-color:var(--green);}
-  textarea{resize:vertical;min-height:58px;}
-  hr.dv{border:none;border-top:1px solid var(--border);margin:.6rem 0;}
-  .mfa{display:flex;gap:.52rem;justify-content:flex-end;margin-top:.85rem;padding-top:.65rem;border-top:1px solid var(--border);position:sticky;bottom:0;background:white;z-index:1;}
-  .btnc{background:none;border:1.5px solid var(--border);padding:.4rem .82rem;border-radius:6px;cursor:pointer;font-size:.76rem;color:var(--mid);}
-  .btns{background:var(--green);color:white;border:none;padding:.4rem 1.05rem;border-radius:6px;cursor:pointer;font-size:.76rem;font-weight:700;}
-  .btns:hover{background:var(--dgreen);}
-  .hint{font-size:.66rem;color:var(--grey);margin-bottom:.52rem;background:var(--light);padding:.42rem .58rem;border-radius:6px;}
-  @media(max-width:900px){
-    .s5,.s4{grid-template-columns:repeat(2,1fr);}
-    .s3{grid-template-columns:1fr 1fr;}
-    .g2,.g3,.g31,.kgrid{grid-template-columns:1fr;}
-  }
-</style>
-</head>
-<body>
-
-<!-- ═══════════════════════════════════════════════
-     LOCK SCREEN
-═══════════════════════════════════════════════ -->
-<div id="lockScreen" style="position:fixed;inset:0;background:var(--green);z-index:9999;display:flex;align-items:center;justify-content:center;">
-  <div style="background:white;border-radius:16px;padding:2.5rem;width:400px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center;">
-    <img src="logo.png" alt="GNPC Logo" style="height:72px;width:auto;margin:0 auto 20px;display:block;" onerror="this.style.display='none'">
-    <h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:8px;font-weight:600;">Ghana National Petroleum Corporation</h2>
-    <h1 style="font-size:22px;color:var(--green);margin-bottom:6px;font-weight:700;line-height:1.2;">Environmental Performance Platform</h1>
-    <p style="color:#64748b;font-size:13px;margin-bottom:24px;">Environment Department • Restricted Access</p>
-    <div id="auth-error" style="display:none;background:#FEE2E2;color:#B91C1C;padding:.6rem .85rem;border-radius:7px;font-size:.78rem;margin-bottom:14px;text-align:left;"></div>
-    <div style="margin-bottom:14px;text-align:left;">
-      <label style="font-size:10px;font-weight:600;color:#475569;text-transform:uppercase;display:block;margin-bottom:6px;letter-spacing:.05em;">Work Email</label>
-      <input type="email" id="loginEmail" placeholder="name@gnpc.com.gh" style="padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:6px;font-size:14px;background:#f8fafc;width:100%;color:var(--slate);outline:none;" onkeydown="if(event.key==='Enter')document.getElementById('loginPassword').focus()">
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#0a4a6e 0%,var(--blue) 100%);border-radius:12px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;">
+    <div>
+      <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);margin-bottom:.2rem;">GNPC · Petroleum House</div>
+      <div style="font-size:1.1rem;font-weight:800;color:white;margin-bottom:.1rem;" id="wt-header-title">💧 Water Consumption</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.6);" id="wt-header-sub">Ghana Water Company · Monthly billing</div>
     </div>
-    <div style="margin-bottom:8px;text-align:left;">
-      <label style="font-size:10px;font-weight:600;color:#475569;text-transform:uppercase;display:block;margin-bottom:6px;letter-spacing:.05em;">Password</label>
-      <input type="password" id="loginPassword" placeholder="••••••••" style="padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:6px;font-size:14px;background:#f8fafc;letter-spacing:.12em;width:100%;outline:none;" onkeydown="if(event.key==='Enter') doLogin()">
-    </div>
-    <div style="text-align:right;margin-bottom:20px;">
-      <span onclick="doForgotPassword()" style="font-size:.72rem;color:var(--green);cursor:pointer;text-decoration:underline;">Forgot password?</span>
-    </div>
-    <button id="loginBtn" onclick="doLogin()" style="width:100%;background:var(--green);color:white;border:none;padding:.65rem 1.2rem;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;">Sign In</button>
-    <p style="font-size:.68rem;color:#94A3B8;margin-top:14px;">Access restricted to GNPC Environment Department personnel.<br>Contact your administrator if you cannot log in.</p>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════
-     HEADER
-═══════════════════════════════════════════════ -->
-<header>
-  <div class="hl">
-    <div class="ht">
-      <h1>Ghana National Petroleum Corporation</h1>
-      <p>Environmental Performance Platform</p>
+    <div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:.35rem;">
+        <button class="wt-yr-btn active" data-yr="2025" onclick="setWaterYear(2025,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid white;background:white;color:var(--blue);font-size:.73rem;font-weight:700;cursor:pointer;">2025</button>
+        <button class="wt-yr-btn" data-yr="2026" onclick="setWaterYear(2026,this)" style="padding:.28rem .75rem;border-radius:20px;border:1.5px solid rgba(255,255,255,.5);background:transparent;color:white;font-size:.73rem;font-weight:600;cursor:pointer;">2026</button>
+      </div>
+      <button class="hbtn" onclick="openEntry('water')" style="background:white;color:var(--blue);font-weight:700;">+ Add Water Data</button>
     </div>
   </div>
-  <div class="hr2">
-    <span class="hdate" id="hdrDate"></span>
-    <button class="hbtn gold" onclick="openEntry(activeTab && ['up_overview','flaring','emissions_up','produced_water','production'].includes(activeTab) ? 'upstream' : activeTab === 'waste' ? 'waste' : activeTab === 'water' ? 'water' : activeTab === 'travel' ? 'travel' : 'energy')">+ Add Data</button>
-    <button class="hbtn" onclick="downloadTabPDF({tabId:activeTab,title:TAB_TITLES[activeTab]||'Report',filename:'GNPC_'+( TAB_TITLES[activeTab]||'Report').replace(/[^a-zA-Z0-9]/g,'_')+'_'+ new Date().toISOString().split('T')[0]+'.pdf'})" style="background:rgba(255,255,255,.15);">⬇ Export PDF</button>
-    <button class="hbtn" onclick="doSignOut()" style="background:rgba(255,0,0,.25);border-color:rgba(255,100,100,.4);" title="Sign out">⏻ Sign Out</button>
+
+  <div id="wt-kpi-grid" class="sr s4" style="margin-bottom:.85rem;"></div>
+
+  <div class="g2" style="margin-bottom:1rem;">
+    <div class="card"><div class="ct" id="wt-chart-title">Monthly Water Consumption 2025 — Petroleum House (Litres)</div><canvas id="wt-chart"></canvas></div>
+    <div class="card">
+      <div class="ct">Standard Reference Range</div>
+      <div style="padding:.5rem 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.75rem;"><span>Monthly Low</span><strong>180,000 L</strong></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.75rem;"><span>Monthly High</span><strong>350,000 L</strong></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;font-size:.75rem;"><span>Annual Estimate</span><strong>~3,000,000 L</strong></div>
+      </div>
+    </div>
   </div>
-</header>
 
-<!-- ═══════════════════════════════════════════════
-     SCOPE BANNER
-═══════════════════════════════════════════════ -->
+  <div class="card">
+    <div class="ct" id="wt-table-title">Monthly Water Data 2025 — Petroleum House</div>
+    <div class="tw"><table>
+      <thead><tr><th>Month</th><th>Volume (Litres)</th><th>Cost (GH¢)</th><th>vs Range</th><th>Status</th></tr></thead>
+      <tbody id="wt-tbody"></tbody>
+    </table></div>
+  </div>
 
-<div class="scope-banner">
-  <div class="scope-btn active" onclick="setScope('ph',this)">🏢 Corporate Sites</div>
-  <div class="sdiv"></div>
-  <div class="scope-btn" onclick="setScope('upstream',this)">⛽ JV Upstream Assets</div>
-</div>
+  <div class="pending" id="wt-pending-note">
+    <span style="font-size:1.1rem;">💧</span>
+    <div><h4 id="wt-pending-title">Remaining Months — Data Not Yet Available</h4>
+    <p>Use the + Add Water Data button to log remaining months when data becomes available.</p></div>
+  </div>
 
-<!-- ═══════════════════════════════════════════════
-     NAV BARS
-═══════════════════════════════════════════════ -->
-<nav id="nav-ph" style="display:flex;align-items:stretch;">
-  <div class="nt active" onclick="showTab('overview',this)">📊 Overview</div>
-  <div class="nt" onclick="showTab('summary',this)">🌍 Executive Summary</div>
-  <div class="nt" onclick="showTab('carbon',this)">🌿 Carbon Credits</div>
-  <div style="width:1px;background:rgba(255,255,255,.25);margin:.3rem .2rem;flex-shrink:0;"></div>
-  <div class="nt" onclick="showTab('energy',this)">⚡ Electricity</div>
-  <div class="nt" onclick="showTab('waste',this)">🗑️ Waste</div>
-  <div class="nt" onclick="showTab('water',this)">💧 Water</div>
-  <div class="nt" onclick="showTab('travel',this)">✈️ Air Travel</div>
-  <div class="nt" onclick="showTab('vehicles',this)">🚗 Fleet & Vehicles</div>
-  <div style="width:1px;background:rgba(255,255,255,.25);margin:.3rem .2rem;flex-shrink:0;"></div>
-  <div class="nt" onclick="showTab('datacentre',this)">📋 Data Centre</div>
-  <div class="nt" id="admin-nav-btn" onclick="showTab('admin',this)" style="display:none;">⚙️ Admin</div>
-</nav>
-<nav id="nav-upstream" style="display:none;">
-  <div class="nt active" onclick="showTab('up_overview',this)">📊 Overview</div>
-  <div class="nt" onclick="showTab('flaring',this)">🔥 Flaring</div>
-  <div class="nt" onclick="showTab('emissions_up',this)">💨 GHG Emissions</div>
-  <div class="nt" onclick="showTab('produced_water',this)">💧 Produced Water</div>
-  <div class="nt" onclick="showTab('production',this)">🛢️ Production</div>
-  <div class="nt" onclick="showTab('summary',this)">🌍 Executive Summary</div>
-  <div class="nt" onclick="showTab('carbon',this)">🌿 Carbon Credits</div>
-</nav>
-<nav id="nav-all" style="display:none;">
-  <div class="nt active" onclick="showTab('all_overview',this)">📊 Combined Overview</div>
-</nav>
+  </div><!-- /wt-ph-panel -->
 
-<!-- ═══════════════════════════════════════════════
-     PAGES
-═══════════════════════════════════════════════ -->
+  <!-- RATC Water -->
+  <div id="wt-ratc-panel" style="display:none;">
+    <div class="info"><span>🔬</span><div><strong>Research &amp; Technology Centre — Water.</strong> Framework ready — awaiting data collection.</div></div>
+    <div class="pending"><span>💧</span><div><h4>RATC Water Data — Pending</h4><p>Use + Add Water Data to begin logging.</p></div></div>
+  </div>
 
-<!-- AIR TRAVEL -->
+  <!-- GTC Water -->
+  <div id="wt-gtc-panel" style="display:none;">
+    <div class="info"><span>🎓</span><div><strong>GNPC Training Centre — Water.</strong> Framework ready — awaiting data collection.</div></div>
+    <div class="pending"><span>💧</span><div><h4>GTC Water Data — Pending</h4><p>Use + Add Water Data to begin logging.</p></div></div>
+  </div>
+
+  <!-- Energy House Water -->
+  <div id="wt-eh-panel" style="display:none;">
+    <div class="info"><span>🏭</span><div><strong>Energy House, Takoradi — Water.</strong> Framework ready — awaiting data collection.</div></div>
+    <div class="pending"><span>💧</span><div><h4>Energy House Water Data — Pending</h4><p>Use + Add Water Data to begin logging.</p></div></div>
+  </div>
+
+</div><!-- /page-water -->
+
 <div class="page" id="page-travel">
 <div style="background:linear-gradient(135deg,#0D9488 0%,#0f766e 100%);border-radius:12px;padding:1rem 1.4rem;margin-bottom:1rem;">
     <div style="font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:.2rem;">GNPC · All Directorates · Scope 3</div>
