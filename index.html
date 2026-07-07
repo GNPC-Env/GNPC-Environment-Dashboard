@@ -1545,7 +1545,7 @@ CREATE POLICY "Auth users can insert travel" ON petroleum_house_travel  FOR INSE
     <div class="ct">Step 5 — User Management</div>
     <div style="font-size:.75rem;color:var(--mid);margin-bottom:.85rem;line-height:1.6;">
       Manage who can access the GNPC Environmental Performance Platform. Only users with a GNPC email address should be invited.
-      <strong>Admin tab</strong> is restricted to <strong>n.antwi-yeboah@gnpc.com.gh</strong> only — all other users have data view and entry access only.
+      <strong>Admin tab</strong> is restricted to <strong>n.antwiyeboah@gnpcghana.com</strong> only — all other users have data view and entry access only.
     </div>
 
     <!-- Current Users -->
@@ -1563,7 +1563,7 @@ CREATE POLICY "Auth users can insert travel" ON petroleum_house_travel  FOR INSE
       <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:.65rem;align-items:flex-end;">
         <div class="fg" style="margin:0;">
           <label>Email Address</label>
-          <input type="email" id="invite-email" placeholder="colleague@gnpc.com.gh" style="width:100%;box-sizing:border-box;">
+          <input type="email" id="invite-email" placeholder="colleague@gnpcghana.com" style="width:100%;box-sizing:border-box;">
         </div>
         <div class="fg" style="margin:0;">
           <label>Temporary Password</label>
@@ -1571,7 +1571,7 @@ CREATE POLICY "Auth users can insert travel" ON petroleum_house_travel  FOR INSE
         </div>
         <button onclick="inviteUser()" class="hbtn gold" style="align-self:flex-end;">Send Invite</button>
       </div>
-      <div style="font-size:.68rem;color:var(--grey);margin-top:.4rem;">The user will be asked to change their password on first login. Only @gnpc.com.gh emails are accepted.</div>
+      <div style="font-size:.68rem;color:var(--grey);margin-top:.4rem;">The user will be asked to change their password on first login. Accepts @gnpcghana.com and @gnpc.com.gh email addresses.</div>
       <div id="invite-status" style="display:none;margin-top:.5rem;font-size:.73rem;padding:.4rem .7rem;border-radius:6px;"></div>
     </div>
 
@@ -1581,7 +1581,7 @@ CREATE POLICY "Auth users can insert travel" ON petroleum_house_travel  FOR INSE
       <div style="display:grid;grid-template-columns:1fr auto;gap:.65rem;align-items:flex-end;">
         <div class="fg" style="margin:0;">
           <label>User Email to Remove</label>
-          <input type="email" id="remove-email" placeholder="email@gnpc.com.gh" style="width:100%;box-sizing:border-box;">
+          <input type="email" id="remove-email" placeholder="email@gnpcghana.com" style="width:100%;box-sizing:border-box;">
         </div>
         <button onclick="removeUser()" style="padding:.38rem .9rem;background:#C53030;color:white;border:none;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer;align-self:flex-end;">Remove</button>
       </div>
@@ -6063,7 +6063,7 @@ async function loadPlatformUsers() {
         <div class="tw" style="margin-bottom:.5rem;"><table>
           <thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead>
           <tbody>
-            <tr><td><strong>Nina Antwi-Yeboah</strong></td><td>n.antwi-yeboah@gnpc.com.gh</td><td><span class="cbadge cok">✅ Admin</span></td></tr>
+            <tr><td><strong>Nina Antwi-Yeboah</strong></td><td>n.antwiyeboah@gnpcghana.com</td><td><span class="cbadge cok">✅ Admin</span></td></tr>
           </tbody>
         </table></div>
         <div style="font-size:.68rem;color:var(--grey);background:var(--lgold);padding:.4rem .6rem;border-radius:5px;">
@@ -6111,7 +6111,7 @@ async function inviteUser() {
   };
 
   if (!email) return showStatus("Please enter an email address.", false);
-  if (!email.endsWith("@gnpc.com.gh")) return showStatus("Only @gnpc.com.gh email addresses are accepted.", false);
+  if (!email.endsWith("@gnpc.com.gh") && !email.endsWith("@gnpcghana.com")) return showStatus("Only @gnpc.com.gh or @gnpcghana.com email addresses are accepted.", false);
   if (password.length < 8) return showStatus("Password must be at least 8 characters.", false);
   if (email === ADMIN_EMAIL.toLowerCase()) return showStatus("That email already has Admin access.", false);
 
