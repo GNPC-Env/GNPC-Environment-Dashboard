@@ -4354,12 +4354,17 @@ function generateReport() {
     return `<span style="font-size:.7rem;font-weight:700;color:${col};">${arrow} ${Math.abs(d)}% vs ${prevYr}</span>`;
   }
 
-  // ── PH Metrics ──
-  const kwh     = sumRange(yrData.kwh,  moStart, moEnd);
-  const cost    = sumRange(yrData.cost, moStart, moEnd);
-  const co2e    = kwh ? +(kwh * 0.00044).toFixed(2) : null;
-  const prevKwh = sumRange(prevData.kwh,  moStart, moEnd);
-  const prevCost= sumRange(prevData.cost, moStart, moEnd);
+  // ── Corporate Sites Energy Metrics (PH + Energy House) ──
+  const phKwh    = sumRange(yrData.kwh,  moStart, moEnd);
+  const phCost   = sumRange(yrData.cost, moStart, moEnd);
+  const ehYrData = (energyHouseData && energyHouseData[yr]) ? energyHouseData[yr] : { kwh:Array(12).fill(null), cost:Array(12).fill(null) };
+  const ehKwh    = sumRange(ehYrData.kwh,  moStart, moEnd);
+  const ehCost   = sumRange(ehYrData.cost, moStart, moEnd);
+  const kwh      = (phKwh||0) + (ehKwh||0) || null;
+  const cost     = (phCost||0) + (ehCost||0) || null;
+  const co2e     = kwh ? +(kwh * 0.00044).toFixed(2) : null;
+  const prevKwh  = sumRange(prevData.kwh,  moStart, moEnd);
+  const prevCost = sumRange(prevData.cost, moStart, moEnd);
 
   const genWaste = sumRange(wasteData.general[yr], moStart, moEnd);
   const plastic  = sumRange(wasteData.plastic[yr],  moStart, moEnd);
