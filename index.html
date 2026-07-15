@@ -896,25 +896,18 @@ if (!window.supabase) {
     </div>
   </div>
 
-  <div id="wt-kpi-grid" class="sr s4" style="margin-bottom:.85rem;"></div>
+  <div id="wt-kpi-row" class="sr s4" style="margin-bottom:.85rem;"></div>
 
-  <div class="g2" style="margin-bottom:1rem;">
-    <div class="card"><div class="ct" id="wt-chart-title">Monthly Water Consumption 2025 — Petroleum House (Litres)</div><canvas id="wt-chart"></canvas></div>
-    <div class="card">
-      <div class="ct">Standard Reference Range</div>
-      <div style="padding:.5rem 0;">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.75rem;"><span>Monthly Low</span><strong>180,000 L</strong></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.75rem;"><span>Monthly High</span><strong>350,000 L</strong></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;font-size:.75rem;"><span>Annual Estimate</span><strong>~3,000,000 L</strong></div>
-      </div>
-    </div>
+<div class="g2" style="margin-bottom:1rem;">
+    <div class="card"><div class="ct" id="wt-chart-title">Monthly Water Consumption — Petroleum House (Litres)</div><canvas id="wt-volume-chart"></canvas></div>
+    <div class="card"><div class="ct">Monthly Water Cost (GH¢)</div><canvas id="wt-cost-chart"></canvas></div>
   </div>
 
   <div class="card">
     <div class="ct" id="wt-table-title">Monthly Water Data 2025 — Petroleum House</div>
     <div class="tw"><table>
       <thead><tr><th>Month</th><th>Volume (Litres)</th><th>Cost (GH¢)</th><th>vs Range</th><th>Status</th></tr></thead>
-      <tbody id="wt-tbody"></tbody>
+      <tbody id="wt-monthly-tbody"></tbody>
     </table></div>
   </div>
 
