@@ -3087,10 +3087,12 @@ async function downloadTabPDF(opts) {
     await new Promise(r => setTimeout(r, 200));
     finishAndDownload(pdfBytes, filename);
 
-  } catch(err) {
+ } catch(err) {
     showPDFProgress(false);
     console.error("PDF error:", err);
     alert("PDF export failed: " + err.message);
+  } finally {
+    briefRestore(briefState);
   }
 }
 
@@ -6806,6 +6808,43 @@ function mountBriefPanel(containerId, module, title) {
   if (!host || host.dataset.briefMounted) return;
   host.innerHTML = briefPanelHTML(module, title);
   host.dataset.briefMounted = "1";
+  loadBrief(module);
+}
+// Swap the brief panel for print-friendly text during PDF capture
+function briefToPrintMode(pageEl) {
+  const host = pageEl.querySelector('[id^="brief-host-"]');
+  if (!host) return null;
+  const module = host.id.replace("brief-host-", "");
+  const ta = document.getElementById(`brief-text-${module}`);
+  const text = (ta?.value || "").trim();
+  const p = window._briefPeriod[module];
+
+  const original = host.innerHTML;
+
+  if (!text) { host.style.display = "none"; return { host, original, hidden: true }; }
+
+  const paras = text.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean)
+    .map(s => `<p style="margin:0 0 .55rem 0;font-size:.8rem;line-height:1.65;color:var(--dark);">${
+      s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/\n/g,"<br>")}</p>`).join("");
+
+  host.innerHTML = `
+    <div style="border:1px solid var(--gold);border-left:4px solid var(--gold);border-radius:8px;
+                background:#FFFDF5;padding:1rem 1.1rem;margin-bottom:1rem;">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+                  color:var(--green);margin-bottom:.15rem;">Preparer's Brief</div>
+      <div style="font-size:.68rem;color:var(--grey);margin-bottom:.7rem;">
+        ${p?.label || ""}${window.currentUser ? " · prepared by " + window.currentUser : ""}
+      </div>
+      ${paras}
+    </div>`;
+  return { host, original, hidden: false };
+}
+
+function briefRestore(state) {
+  if (!state) return;
+  state.host.style.display = "";
+  state.host.innerHTML = state.original;
+  const module = state.host.id.replace("brief-host-", "");
   loadBrief(module);
 }
 </script>
