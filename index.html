@@ -4870,7 +4870,7 @@ function buildPHEnergyCharts(yr) {
     const c = costCur[i];
     const t = d.tariff ? d.tariff[i] : null;
     const co2 = k ? (k * 0.00044).toFixed(2) : "—";
-    const note = (yr == 2025 && i === 0) ? "⚠️ Catch-up billing" : (yr == 2025 && i === 1) ? "❌ No data" : "";
+    const note = (k !== null && k > 150000) ? "⚠️ Unusually high" : (k === null ? "❌ No data" : "");
     rows.push(`<tr><td>${yr}</td><td>${m}</td><td class="num">${k !== null ? k.toLocaleString() : "—"}</td><td class="num">${c !== null ? (c||0).toLocaleString() : "—"}</td><td class="num">${t !== null ? t : "—"}</td><td class="num">${k !== null ? co2 : "—"}</td><td>${note}</td></tr>`);
   });
   tbody.innerHTML = rows.join("");
