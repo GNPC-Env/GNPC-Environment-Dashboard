@@ -2178,7 +2178,7 @@ async function doLogin() {
 
   // Attempt Supabase authentication directly — no offline bypass
   try {
-    const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
+   const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
     if (error) throw error;
 
     const meta = data.user?.user_metadata || {};
@@ -2296,12 +2296,20 @@ async function syncAllDataFromSupabase() {
       .from("petroleum_house_energy").select("*").order("created_at");
     if (energyRows && energyRows.length > 0) {
       energyRows.forEach(r => {
-        const yr = r.year; const mo = r.month_index;
+        const yr = r.year;
+        // month_index may not be stored — derive from month name
+        var mo = r.month_index;
+        if (mo === null || mo === undefined) {
+          mo = ["January","February","March","April","May","June","July","August","September","October","November","December"].indexOf(r.month);
+        }
         if (!energyData[yr]) energyData[yr] = { kwh: Array(12).fill(null), cost: Array(12).fill(null), tariff: Array(12).fill(null) };
         if (mo >= 0 && mo < 12) {
-          if (r.kwh !== null) energyData[yr].kwh[mo] = r.kwh;
-          if (r.cost_ghc !== null) energyData[yr].cost[mo] = r.cost_ghc;
-          if (r.tariff !== null) energyData[yr].tariff[mo] = r.tariff;
+          // Column is consumption_kwh (not kwh)
+          var kwhVal = r.consumption_kwh !== undefined ? r.consumption_kwh : r.kwh;
+          var tariffVal = r.tariff_ghc_kwh !== undefined ? r.tariff_ghc_kwh : r.tariff;
+          if (kwhVal !== null && kwhVal !== undefined) energyData[yr].kwh[mo] = kwhVal;
+          if (r.cost_ghc !== null && r.cost_ghc !== undefined) energyData[yr].cost[mo] = r.cost_ghc;
+          if (tariffVal !== null && tariffVal !== undefined) energyData[yr].tariff[mo] = tariffVal;
         }
       });
     }
@@ -2495,7 +2503,17 @@ async function saveToSupabase(table, payload) {
     return { ok: true, offline: true };
   }
   try {
-    const { data, error } = await window.supabaseClient.from(table).insert([payload]).select();
+  const conflictKeys = {
+      petroleum_house_energy: "year,month",
+      petroleum_house_water:  "year,month",
+      petroleum_house_waste:  "year,month",
+      upstream_field_data:    "field,year,month"
+    };
+    const onConflict = conflictKeys[table];
+    const q = window.supabaseClient.from(table);
+    const { data, error } = onConflict
+      ? await q.upsert([payload], { onConflict }).select()
+      : await q.insert([payload]).select();
     if (error) {
       // Surface error visibly in the modal
       showSaveStatus("error", `Save failed (${table}): ${error.message}`);
@@ -2649,15 +2667,21 @@ async function saveEnergyEntry() {
     if (!result.ok && !result.offline) return; // error already shown
 
     if (!energyData[yr]) energyData[yr] = { kwh:Array(12).fill(null), cost:Array(12).fill(null), tariff:Array(12).fill(null) };
-    if (kwh)    energyData[yr].kwh[mo]    = kwh;
-    if (cost)   energyData[yr].cost[mo]   = cost;
-    if (tariff) energyData[yr].tariff[mo] = tariff;
+    if (kwh    !== null) energyData[yr].kwh[mo]    = kwh;
+    if (cost   !== null) energyData[yr].cost[mo]   = cost;
+    if (tariff !== null) energyData[yr].tariff[mo] = tariff;
     built.energy = false;
     updateLiveStatCards();
 
     const msg = result.offline ? "✓ Saved locally (offline). Will sync when connection is restored." : "✓ Energy data saved to Supabase.";
     closeEntry();
     showSaveStatus("success", msg);
+    // Force rebuild of energy page to show new data
+    if (window._phEnYear === yr || !window._phEnYear) {
+      window._phEnYear = yr;
+      renderPHEnergy(yr);
+      buildPHEnergyCharts(yr);
+    }
     showTab("energy");
   });
 }
