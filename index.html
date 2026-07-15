@@ -457,7 +457,7 @@ if (!window.supabase) {
 </div>
 
 <!-- ENERGY -->
-<div class="page" id="page-energy">
+<div class="page" id="page-energy"><div id="brief-host-energy"></div>
   <!-- Location sub-tabs -->
   <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
     <button class="en-loc-btn active" data-loc="all"  onclick="switchEnergyLocation(this,'all')"  style="padding:.42rem .9rem;border:none;border-bottom:2px solid var(--green);background:none;font-size:.75rem;font-weight:700;color:var(--green);cursor:pointer;margin-bottom:-2px;">📊 Summary</button>
@@ -620,7 +620,7 @@ if (!window.supabase) {
 </div>
 
 <!-- WASTE -->
-<div class="page" id="page-waste">
+<div class="page" id="page-waste"><div id="brief-host-waste"></div>
 
   <!-- Site tabs -->
   <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
@@ -845,7 +845,7 @@ if (!window.supabase) {
   </div>
 
 <!-- WATER -->
-<div class="page" id="page-water">
+<div class="page" id="page-water"><div id="brief-host-water"></div>
 
   <!-- Site tabs -->
   <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:1rem;flex-wrap:wrap;">
@@ -4191,10 +4191,10 @@ function buildTravel() {
 
 window.BUILDERS = {
   overview:       buildOverview,
-  energy:         buildEnergy,
+  energy:         () => { mountBriefPanel("brief-host-energy","energy","Electricity"); buildEnergy(); },
   travel:         buildTravel,
   vehicles:       () => renderVehicleRegistry(),
-  waste:          buildWaste,
+  waste:          () => { mountBriefPanel("brief-host-waste","waste","Waste"); buildWaste(); },
   up_overview:    buildUpOverview,
   flaring:        buildFlaring,
   emissions_up:   buildEmissionsUp,
@@ -4203,7 +4203,7 @@ window.BUILDERS = {
   all_overview:   buildAllOverview,
   summary:        buildSummary,
   search:         buildSearch,
-  water:          () => buildWaterPage(window._waterYear||2025),
+  water:          () => { mountBriefPanel("brief-host-water","water","Water"); buildWaterPage(window._waterYear||2025); }
   datacentre:     buildDataCentre,
   status:         buildStatus,
   carbon:         buildCarbonTab,
@@ -6653,6 +6653,160 @@ async function saveTravelEntry() {
     updateLiveStatCards();
     closeEntry();showSaveStatus("success",result.offline?"✓ Saved locally.":"✓ Air travel entry saved.");
   });
+}
+// ══════════════════════════════════════════════
+// PREPARER'S BRIEFS — per module, per period
+// ══════════════════════════════════════════════
+window._briefPeriod = {};   // module -> {type, start, end, label}
+
+function briefPeriodFromControls(module) {
+  const type = document.getElementById(`brief-type-${module}`)?.value || "year";
+  const yr   = parseInt(document.getElementById(`brief-year-${module}`)?.value || new Date().getFullYear());
+  let start, end, label;
+
+  if (type === "month") {
+    const mo = parseInt(document.getElementById(`brief-month-${module}`)?.value || 0);
+    start = new Date(Date.UTC(yr, mo, 1));
+    end   = new Date(Date.UTC(yr, mo + 1, 0));
+    label = `${MFULL[mo]} ${yr}`;
+  } else if (type === "quarter") {
+    const q  = parseInt(document.getElementById(`brief-quarter-${module}`)?.value || 1);
+    const ms = (q - 1) * 3;
+    start = new Date(Date.UTC(yr, ms, 1));
+    end   = new Date(Date.UTC(yr, ms + 3, 0));
+    label = `Q${q} ${yr}`;
+  } else if (type === "custom") {
+    const s = document.getElementById(`brief-start-${module}`)?.value;
+    const e = document.getElementById(`brief-end-${module}`)?.value;
+    if (!s || !e) return null;
+    start = new Date(s + "T00:00:00Z");
+    end   = new Date(e + "T00:00:00Z");
+    label = `${s} to ${e}`;
+  } else {
+    start = new Date(Date.UTC(yr, 0, 1));
+    end   = new Date(Date.UTC(yr, 11, 31));
+    label = `Full Year ${yr}`;
+  }
+
+  const iso = d => d.toISOString().split("T")[0];
+  return { type, start: iso(start), end: iso(end), label };
+}
+
+function updateBriefControls(module) {
+  const type = document.getElementById(`brief-type-${module}`)?.value || "year";
+  const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? "" : "none"; };
+  show(`brief-month-wrap-${module}`,   type === "month");
+  show(`brief-quarter-wrap-${module}`, type === "quarter");
+  show(`brief-year-wrap-${module}`,    type !== "custom");
+  show(`brief-custom-wrap-${module}`,  type === "custom");
+  loadBrief(module);
+}
+
+async function loadBrief(module) {
+  const p = briefPeriodFromControls(module);
+  const ta   = document.getElementById(`brief-text-${module}`);
+  const meta = document.getElementById(`brief-meta-${module}`);
+  if (!p || !ta) return;
+  window._briefPeriod[module] = p;
+
+  try {
+    const { data, error } = await window.supabaseClient
+      .from("module_briefs").select("*")
+      .eq("module", module).eq("period_start", p.start).eq("period_end", p.end)
+      .maybeSingle();
+    if (error) throw error;
+    ta.value = data?.brief || "";
+    if (meta) meta.textContent = data
+      ? `Last saved ${new Date(data.updated_at).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})} by ${data.entered_by || "—"}`
+      : "No brief saved for this period yet.";
+  } catch(e) {
+    if (meta) meta.textContent = "Could not load brief: " + e.message;
+  }
+}
+
+async function saveBrief(module) {
+  const p  = briefPeriodFromControls(module);
+  const ta = document.getElementById(`brief-text-${module}`);
+  const meta = document.getElementById(`brief-meta-${module}`);
+  if (!p || !ta) return;
+  if (!window.currentUser) { if (meta) meta.textContent = "Not signed in."; return; }
+
+  const payload = {
+    module, period_type: p.type, period_start: p.start, period_end: p.end,
+    label: p.label, brief: ta.value, entered_by: window.currentUser,
+    updated_at: new Date().toISOString()
+  };
+
+  if (meta) meta.textContent = "Saving…";
+  try {
+    const { error } = await window.supabaseClient
+      .from("module_briefs")
+      .upsert([payload], { onConflict: "module,period_start,period_end" });
+    if (error) throw error;
+    if (meta) meta.textContent = `✓ Saved ${new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}`;
+    window._briefPeriod[module] = p;
+  } catch(e) {
+    if (meta) meta.textContent = "Save failed: " + e.message;
+  }
+}
+
+// Renders the brief panel HTML for a module
+function briefPanelHTML(module, title) {
+  const yrs = [2026,2025,2024,2023,2022];
+  return `
+  <div class="card" style="margin-bottom:1rem;border-left:4px solid var(--gold);">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem;">
+      <div class="ct" style="margin:0;border:none;padding:0;">📝 Preparer's Brief — ${title}</div>
+      <span id="brief-meta-${module}" style="font-size:.66rem;color:var(--grey);"></span>
+    </div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:.6rem;">
+      <div class="fg">
+        <label>Period</label>
+        <select id="brief-type-${module}" onchange="updateBriefControls('${module}')" style="font-size:.74rem;">
+          <option value="year">Full Year</option>
+          <option value="quarter">Quarter</option>
+          <option value="month">Single Month</option>
+          <option value="custom">Custom Range</option>
+        </select>
+      </div>
+      <div class="fg" id="brief-year-wrap-${module}">
+        <label>Year</label>
+        <select id="brief-year-${module}" onchange="loadBrief('${module}')" style="font-size:.74rem;">
+          ${yrs.map(y=>`<option value="${y}">${y}</option>`).join("")}
+        </select>
+      </div>
+      <div class="fg" id="brief-quarter-wrap-${module}" style="display:none;">
+        <label>Quarter</label>
+        <select id="brief-quarter-${module}" onchange="loadBrief('${module}')" style="font-size:.74rem;">
+          <option value="1">Q1</option><option value="2">Q2</option>
+          <option value="3">Q3</option><option value="4">Q4</option>
+        </select>
+      </div>
+      <div class="fg" id="brief-month-wrap-${module}" style="display:none;">
+        <label>Month</label>
+        <select id="brief-month-${module}" onchange="loadBrief('${module}')" style="font-size:.74rem;">
+          ${MFULL.map((m,i)=>`<option value="${i}">${m}</option>`).join("")}
+        </select>
+      </div>
+      <div class="fg" id="brief-custom-wrap-${module}" style="display:none;flex-direction:row;gap:.4rem;">
+        <div class="fg"><label>From</label><input type="date" id="brief-start-${module}" onchange="loadBrief('${module}')" style="font-size:.74rem;"></div>
+        <div class="fg"><label>To</label><input type="date" id="brief-end-${module}" onchange="loadBrief('${module}')" style="font-size:.74rem;"></div>
+      </div>
+    </div>
+    <textarea id="brief-text-${module}" placeholder="Write your brief for this period. Multiple paragraphs are fine — this appears at the top of the exported PDF." style="min-height:120px;font-size:.78rem;line-height:1.6;"></textarea>
+    <div style="display:flex;justify-content:flex-end;margin-top:.5rem;">
+      <button class="btns" onclick="saveBrief('${module}')" style="font-size:.74rem;">💾 Save Brief</button>
+    </div>
+  </div>`;
+}
+
+// Mount brief panels into each module page (called once per page build)
+function mountBriefPanel(containerId, module, title) {
+  const host = document.getElementById(containerId);
+  if (!host || host.dataset.briefMounted) return;
+  host.innerHTML = briefPanelHTML(module, title);
+  host.dataset.briefMounted = "1";
+  loadBrief(module);
 }
 </script>
 </body>
