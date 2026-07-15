@@ -4207,7 +4207,8 @@ window.BUILDERS = {
   all_overview:   buildAllOverview,
   summary:        buildSummary,
   search:         buildSearch,
-  water:          () => { mountBriefPanel("brief-host-water","water","Water"); buildWaterPage(window._waterYear||2025); }
+  water:          () => { mountBriefPanel("brief-host-water","water","Water"); buildWaterPage(window._waterYear||2025); },
+  datacentre:     buildDataCentre,
   datacentre:     buildDataCentre,
   status:         buildStatus,
   carbon:         buildCarbonTab,
