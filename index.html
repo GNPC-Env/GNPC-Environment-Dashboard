@@ -1002,7 +1002,7 @@ if (!window.supabase) {
   <div id="fleet-kpi-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:1rem;"></div>
   <div style="display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;margin-bottom:.75rem;">
     <select id="veh-filter-fuel" onchange="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;"><option value="all">All Fuel Types</option><option value="Diesel">Diesel</option><option value="Petrol">Petrol</option></select>
-    <select id="veh-filter-type" onchange="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;"><option value="all">All Vehicle Types</option><option value="SUV">SUV</option><option value="Pick-Up">Pick-Up</option><option value="Saloon">Saloon</option><option value="Bus">Bus</option><option value="Van">Van</option></select>
+    <select id="veh-filter-type" onchange="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;"><option value="all">All Vehicle Types</option><option value="SUV">SUV</option><option value="Pick-Up">Pick-Up</option><option value="Sedan">Sedan</option><option value="Mini-van">Mini-van</option><option value="Bus">Bus</option></select>
     <select id="veh-sort" onchange="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;"><option value="co2e">Sort: Emissions</option><option value="km">Sort: Mileage</option><option value="litres">Sort: Fuel Use</option><option value="reg">Sort: Reg No.</option></select>
     <input type="text" id="veh-search" placeholder="Reg no., type…" oninput="renderVehicleRegistry()" style="font-size:.74rem;padding:.3rem .55rem;width:140px;">
     <span id="veh-count" style="font-size:.7rem;color:var(--grey);margin-left:auto;"></span>
