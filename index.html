@@ -5140,19 +5140,17 @@ function switchWaterSite(btn, loc) {
 }
 
 function renderWaterSummary() {
-  var wd = window.waterData && window.waterData[2025];
-  var totL = 0; var totC = 0; var moCount = 0;
-  if (wd && wd.litres) {
-    totL    = wd.litres.reduce(function(s,v){return s+v;},0);
-    totC    = wd.cost_ghc.reduce(function(s,v){return s+v;},0);
-    moCount = wd.months.length;
-  }
+ var wd26 = window.waterData && window.waterData[2026];
+  var tot26 = (wd26 && wd26.litres) ? wd26.litres.reduce(function(s,v){return s+v;},0) : 0;
+  var mo26  = (wd26 && wd26.months) ? wd26.months.length : 0;
+  var period = moCount > 0 ? (moCount === 12 ? "Jan–Dec 2025" : wd.months[0]+"–"+wd.months[moCount-1]+" 2025") : "2025";
+
   var kpiEl = document.getElementById("wt-summary-kpi");
   if (kpiEl) kpiEl.innerHTML =
-    '<div class="sc bl"><div class="lb">PH Total (Jan–Jul 2025)</div><div class="vl" style="font-size:1.1rem;">'+(totL>0?totL.toLocaleString():"—")+'</div><div class="sb">Litres · '+moCount+' months</div></div>'+
-    '<div class="sc gd"><div class="lb">PH Cost (Jan–Jul 2025)</div><div class="vl" style="font-size:1rem;">GH¢ '+(totC>0?Math.round(totC).toLocaleString():"—")+'</div><div class="sb">Ghana Water Company</div></div>'+
+    '<div class="sc bl"><div class="lb">PH Total ('+period+')</div><div class="vl" style="font-size:1.1rem;">'+(totL>0?totL.toLocaleString():"—")+'</div><div class="sb">Litres · '+moCount+' months</div></div>'+
+    '<div class="sc gd"><div class="lb">PH Cost ('+period+')</div><div class="vl" style="font-size:1rem;">GH¢ '+(totC>0?Math.round(totC).toLocaleString():"—")+'</div><div class="sb">Ghana Water Company</div></div>'+
     '<div class="sc"><div class="lb">Sites with Data</div><div class="vl">1 of 4</div><div class="sb">PH only · RATC, GTC, EH pending</div></div>'+
-    '<div class="sc or"><div class="lb">2026 Data</div><div class="vl" style="font-size:.9rem;color:var(--grey);">Pending</div><div class="sb">Use + Add Water Data</div></div>';
+    '<div class="sc or"><div class="lb">2026 YTD</div><div class="vl" style="font-size:1.1rem;">'+(tot26>0?tot26.toLocaleString():"—")+'</div><div class="sb">'+(tot26>0?"Litres · "+mo26+" months":"Use + Add Water Data")+'</div></div>';
 
   // Water chart
   if (wd && wd.litres) {
